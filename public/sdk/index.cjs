@@ -47,21 +47,24 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/index.ts
-var src_exports = {};
-__export(src_exports, {
+var index_exports = {};
+__export(index_exports, {
   AirMouseButton: () => AirMouseButton,
   AirMouseFilter: () => AirMouseFilter,
+  AirMouseImplementation: () => AirMouseImplementation,
   AudioSourcePlaybackState: () => AudioSourcePlaybackState,
   ControllerView: () => ControllerView,
   GamepadAxis: () => GamepadAxis,
   GamepadButton: () => GamepadButton,
   HapticPreset: () => HapticPreset,
+  MagneticFieldAccuracy: () => MagneticFieldAccuracy,
   MouseButton: () => MouseButton,
   ScreenOrientation: () => ScreenOrientation,
   VERSION: () => VERSION,
   airDpad: () => airDpad,
   airMouse: () => airMouse,
   audio: () => audio,
+  energy: () => energy,
   gameMessage: () => gameMessage,
   gameVariable: () => gameVariable,
   haptics: () => haptics,
@@ -73,56 +76,11 @@ __export(src_exports, {
   telemetry: () => telemetry,
   textInput: () => textInput
 });
-module.exports = __toCommonJS(src_exports);
+module.exports = __toCommonJS(index_exports);
 
 // src/settings.ts
 var settings = {
   version: "##VERSION##"
-};
-
-// src/internal/event-emitter.ts
-var EventEmitter = class {
-  constructor() {
-    this.eventListeners = {};
-  }
-  get empty() {
-    return Object.keys(this.eventListeners).length === 0;
-  }
-  on(type, listener) {
-    var _a;
-    if (!this.eventListeners[type]) {
-      this.eventListeners[type] = /* @__PURE__ */ new Set();
-    }
-    (_a = this.eventListeners[type]) == null ? void 0 : _a.add(listener);
-    return () => {
-      this.off(type, listener);
-    };
-  }
-  off(type, listener) {
-    var _a;
-    (_a = this.eventListeners[type]) == null ? void 0 : _a.delete(listener);
-  }
-  emit(type, ...args) {
-    var _a;
-    (_a = this.eventListeners[type]) == null ? void 0 : _a.forEach((listener) => listener(...args));
-  }
-};
-var SingleEventEmitter = class {
-  constructor() {
-    this.eventEmitter = new EventEmitter();
-  }
-  on(listener) {
-    return this.eventEmitter.on("event", listener);
-  }
-  off(listener) {
-    this.eventEmitter.off("event", listener);
-  }
-  emit(...args) {
-    this.eventEmitter.emit("event", ...args);
-  }
-  get empty() {
-    return this.eventEmitter.empty;
-  }
 };
 
 // src/internal/dom.ts
@@ -161,6 +119,56 @@ function absoluteUrl(url) {
   return new URL(url, window.location.href).toString();
 }
 
+// src/internal/event-emitter.ts
+var EventEmitter = class {
+  constructor() {
+    this.eventListeners = {};
+  }
+  get empty() {
+    return Object.keys(this.eventListeners).length === 0;
+  }
+  on(type, listener) {
+    var _a;
+    if (!this.eventListeners[type]) {
+      this.eventListeners[type] = /* @__PURE__ */ new Set();
+    }
+    (_a = this.eventListeners[type]) == null ? void 0 : _a.add(listener);
+    return () => {
+      this.off(type, listener);
+    };
+  }
+  off(type, listener) {
+    const listenerSet = this.eventListeners[type];
+    if (listenerSet) {
+      listenerSet.delete(listener);
+      if (listenerSet.size === 0) {
+        delete this.eventListeners[type];
+      }
+    }
+  }
+  emit(type, ...args) {
+    var _a;
+    (_a = this.eventListeners[type]) == null ? void 0 : _a.forEach((listener) => listener(...args));
+  }
+};
+var SingleEventEmitter = class {
+  constructor() {
+    this.eventEmitter = new EventEmitter();
+  }
+  on(listener) {
+    return this.eventEmitter.on("event", listener);
+  }
+  off(listener) {
+    this.eventEmitter.off("event", listener);
+  }
+  emit(...args) {
+    this.eventEmitter.emit("event", ...args);
+  }
+  get empty() {
+    return this.eventEmitter.empty;
+  }
+};
+
 // src/internal/controller-bridge.ts
 var ControllerBridge = class extends EventEmitter {
   constructor() {
@@ -197,29 +205,50 @@ function injectConsoleListener() {
     const original = window.console[method];
     window.console[method] = (...args) => {
       original.apply(window.console, args);
-      const err = new Error();
-      const location = parseStackTrace(err.stack);
+      const stack = new Error().stack;
+      const consoleData = {
+        level: method === "log" ? "info" : method,
+        location: parseStackTrace(stack),
+        args: serializeArgs(args),
+        stack: method === "error" ? stack : void 0
+      };
       controllerBridge.send({
         type: "console",
-        data: {
-          level: method === "log" ? "info" : method,
-          location,
-          args: serializeArgs(args)
-        }
+        data: consoleData
       });
     };
   });
   window.addEventListener("error", (event) => {
+    var _a;
+    const stack = ((_a = event.error) == null ? void 0 : _a.stack) || new Error().stack;
     controllerBridge.send({
       type: "console",
       data: {
         level: "error",
         location: {
-          filename: getDocumentRelativePath(event.filename),
+          filename: event.filename,
           line: event.lineno,
           col: event.colno
         },
-        args: [event.message]
+        args: [event.message],
+        stack
+      }
+    });
+  });
+  window.addEventListener("unhandledrejection", (event) => {
+    var _a;
+    const stack = ((_a = event.reason) == null ? void 0 : _a.stack) || new Error().stack;
+    controllerBridge.send({
+      type: "console",
+      data: {
+        level: "error",
+        location: {
+          filename: "unknown",
+          line: 0,
+          col: 0
+        },
+        args: ["Unhandled Promise Rejection: " + event.reason],
+        stack
       }
     });
   });
@@ -236,20 +265,6 @@ function serializeArgs(args) {
       }
     }
   });
-}
-function getDocumentRelativePath(filename) {
-  if (filename.startsWith(document.location.origin)) {
-    filename = filename.replace(document.location.origin, "");
-    const pathName = document.location.pathname;
-    const basePath = pathName.endsWith("/") ? pathName : pathName.substring(0, pathName.lastIndexOf("/") + 1);
-    if (filename.startsWith(basePath)) {
-      filename = filename.substring(basePath.length);
-    }
-    if (filename.endsWith(document.location.hash)) {
-      filename = filename.replace(document.location.hash, "");
-    }
-  }
-  return filename;
 }
 function parseStackTrace(stack = "") {
   var _a;
@@ -276,7 +291,8 @@ function parseStackTrace(stack = "") {
     col = 0;
   }
   return {
-    filename: getDocumentRelativePath(filename),
+    filename,
+    // Keep the original URL for source map resolution
     line,
     col
   };
@@ -290,7 +306,10 @@ var waitingToSendActivityMessage = false;
 function sendTouchEventMessage(timestamp) {
   controllerBridge.send({
     type: "touchInput",
-    data: { eventTimestamp: timestamp }
+    data: {
+      eventTimestamp: timestamp,
+      age: performance.now() - timestamp
+    }
   });
 }
 function sendActivityMessage(time = Date.now()) {
@@ -389,7 +408,6 @@ var layout = {
     } else {
       const unsubscribe = controllerBridge.on("init", (configuration) => {
         initConfiguration = configuration;
-        injectConsoleListener();
         injectSafeArea({
           top: configuration.safeAreaInsetTop,
           bottom: configuration.safeAreaInsetBottom,
@@ -530,6 +548,9 @@ controllerBridge.on("variable", (data) => {
 });
 var gameVariable = {
   addChangeHandler(handler) {
+    for (const [name, value] of Object.entries(variables)) {
+      handler(name, value);
+    }
     eventEmitter3.on(handler);
   },
   removeChangeHandler(handler) {
@@ -674,10 +695,14 @@ var haptics = {
       data: { action: "play", id: options.id }
     });
   },
-  stop() {
+  stop(options = {}) {
+    const data = { action: "stop" };
+    if (options == null ? void 0 : options.id) {
+      data.id = options.id;
+    }
     controllerBridge.send({
       type: "haptics",
-      data: { action: "stop" }
+      data
     });
   }
 };
@@ -770,14 +795,6 @@ var eventEmitter4 = new SingleEventEmitter();
 controllerBridge.on("textInputEvent", (event) => {
   eventEmitter4.emit(event);
 });
-controllerBridge.on("motionEventsChannel", (event) => {
-  const port = event.port;
-  if (port) {
-    port.onmessage = (event2) => {
-      eventEmitter4.emit(event2.data);
-    };
-  }
-});
 var textInput = {
   open(options, callback) {
     controllerBridge.send({ type: "openTextInput", data: options });
@@ -806,6 +823,11 @@ var AirMouseFilter = /* @__PURE__ */ ((AirMouseFilter2) => {
   AirMouseFilter2["PRECISE"] = "PRECISE";
   return AirMouseFilter2;
 })(AirMouseFilter || {});
+var AirMouseImplementation = /* @__PURE__ */ ((AirMouseImplementation2) => {
+  AirMouseImplementation2["RATE"] = "RATE";
+  AirMouseImplementation2["ATTITUDE"] = "ATTITUDE";
+  return AirMouseImplementation2;
+})(AirMouseImplementation || {});
 var airMouse = {
   start(options, callback) {
     controllerBridge.send({ type: "airMouse.start", data: options });
@@ -820,6 +842,10 @@ var airMouse = {
       type: "airMouse.setMouseButton",
       data: { code, pressed, eventTimestamp }
     });
+    callback(void 0);
+  },
+  recenter(callback) {
+    controllerBridge.send({ type: "airMouse.recenter" });
     callback(void 0);
   }
 };
@@ -837,6 +863,14 @@ var airDpad = {
 };
 
 // src/motion.ts
+var MagneticFieldAccuracy = /* @__PURE__ */ ((MagneticFieldAccuracy2) => {
+  MagneticFieldAccuracy2[MagneticFieldAccuracy2["NOT_AVAILABLE"] = -1] = "NOT_AVAILABLE";
+  MagneticFieldAccuracy2[MagneticFieldAccuracy2["UNCALIBRATED"] = 0] = "UNCALIBRATED";
+  MagneticFieldAccuracy2[MagneticFieldAccuracy2["LOW"] = 1] = "LOW";
+  MagneticFieldAccuracy2[MagneticFieldAccuracy2["MEDIUM"] = 2] = "MEDIUM";
+  MagneticFieldAccuracy2[MagneticFieldAccuracy2["HIGH"] = 3] = "HIGH";
+  return MagneticFieldAccuracy2;
+})(MagneticFieldAccuracy || {});
 var eventEmitter5 = new SingleEventEmitter();
 controllerBridge.on("motionEventsChannel", (event) => {
   const port = event.port;
@@ -1081,23 +1115,47 @@ var telemetry = {
   }
 };
 
+// src/energy.ts
+var eventEmitter6 = new SingleEventEmitter();
+controllerBridge.on("energy.updated", (event) => {
+  eventEmitter6.emit(event);
+});
+var energy = {
+  addUpdateHandler(handler) {
+    if (eventEmitter6.empty) {
+      controllerBridge.send({ type: "energy", action: "startEvent" });
+    }
+    eventEmitter6.on(handler);
+  },
+  removeUpdateHandler(handler) {
+    eventEmitter6.off(handler);
+    if (eventEmitter6.empty) {
+      controllerBridge.send({ type: "energy", action: "stopEvent" });
+    }
+  }
+};
+
 // src/index.ts
+injectConsoleListener();
 var VERSION = settings.version;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AirMouseButton,
   AirMouseFilter,
+  AirMouseImplementation,
   AudioSourcePlaybackState,
   ControllerView,
   GamepadAxis,
   GamepadButton,
   HapticPreset,
+  MagneticFieldAccuracy,
   MouseButton,
   ScreenOrientation,
   VERSION,
   airDpad,
   airMouse,
   audio,
+  energy,
   gameMessage,
   gameVariable,
   haptics,

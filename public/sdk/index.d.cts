@@ -24,13 +24,19 @@ declare const enum AirMouseFilter {
     NONE = "NONE",
     PRECISE = "PRECISE"
 }
+declare const enum AirMouseImplementation {
+    RATE = "RATE",
+    ATTITUDE = "ATTITUDE"
+}
 type AirMouse = {
     start(options: {
         userEducation: boolean;
+        implementation?: AirMouseImplementation;
         filter?: AirMouseFilter;
     }, callback: AirMouseCallback): void;
     stop(callback: AirMouseCallback): void;
     setButton(code: AirMouseButton, pressed: boolean, eventTimestamp: number, callback: AirMouseCallback): void;
+    recenter(callback: AirMouseCallback): void;
 };
 declare const airMouse: AirMouse;
 
@@ -136,6 +142,20 @@ type Telemetry$1 = {
 };
 declare const telemetry: Telemetry$1;
 
+type EnergyUpdateEvent = {
+    available: boolean;
+    lowPowerMode: boolean;
+    lowDataMode: boolean;
+    thermalState: 'normal' | 'fair' | 'serious' | 'critical';
+    batteryLevel: number;
+    batteryState: 'full' | 'charging' | 'unplugged' | 'unknown';
+};
+type EnergyUpdateHandler = (event: EnergyUpdateEvent) => void;
+declare const energy: {
+    addUpdateHandler(handler: EnergyUpdateHandler): void;
+    removeUpdateHandler(handler: EnergyUpdateHandler): void;
+};
+
 type MessageAction<D = undefined, U = undefined> = U extends undefined ? {
     action: D;
 } : {
@@ -182,8 +202,9 @@ type IncomingMessage = Message<'init', {
      * - submit: the user submitted the input using the “done” button
      * - cancel: the user canceled the input by using the “cancel”
      * button
+     * - close: the keyboard was closed programmatically
      */
-    type: 'change' | 'submit' | 'cancel';
+    type: 'change' | 'submit' | 'cancel' | 'close';
     /**
      * The current content of the input
      */
@@ -206,7 +227,7 @@ type IncomingMessage = Message<'init', {
 }> | Message<'audio.sourceClosed', {
     requestId: number;
     error?: NetflixControllerError;
-}>;
+}> | Message<'energy.updated', EnergyUpdateEvent>;
 type StorageAction<T extends string, D> = GenericAction<'storage', T, D>;
 type Storage$1 = StorageAction<'set', {
     requestId: number;
@@ -227,6 +248,8 @@ type TelemetryAction<T extends string, D> = GenericAction<'telemetry', T, D>;
 type Telemetry = TelemetryAction<'logEvent', {
     event: TelemetryEvent;
 }>;
+type EnergyAction<T extends string, D> = GenericAction<'energy', T, D>;
+type Energy = EnergyAction<'startEvent', undefined> | EnergyAction<'stopEvent', undefined>;
 type OutgoingMessage = Message<'ready', {
     assetsStatistics: {
         transferSizeBytes: number;
@@ -250,6 +273,7 @@ type OutgoingMessage = Message<'ready', {
         col: number;
     };
     args: any[];
+    stack?: string;
 }> | Message<'message', {
     messageId: number;
     data: string | ArrayBuffer;
@@ -289,12 +313,14 @@ type OutgoingMessage = Message<'ready', {
     id: string;
 }> | Message<'haptics', {
     action: 'stop';
+    id?: string;
 }> | Message<'mouse', Array<{
     code: string;
     value: boolean | number;
     isRawValue?: boolean;
 }>> | Message<'touchInput', {
     eventTimestamp: number;
+    age: number;
 }> | Storage$1 | Message<
 /**
  * @deprecated use StorageAction<'set'> instead. This is only kept
@@ -336,12 +362,13 @@ type OutgoingMessage = Message<'ready', {
     requestId: number;
 }> | Message<'airMouse.start', {
     userEducation: boolean;
+    implementation?: AirMouseImplementation;
     filter?: AirMouseFilter;
 }> | Message<'airMouse.stop'> | Message<'airMouse.setMouseButton', {
     code: 'BTN_LEFT' | 'BTN_RIGHT';
     pressed: boolean;
     eventTimestamp: number;
-}> | Message<'startAirDpad', AirDpadOptions> | Message<'stopAirDpad'> | Message<'startMotionEvents'> | Message<'stopMotionEvents'> | Message<'audio.createMemorySource', {
+}> | Message<'airMouse.recenter'> | Message<'startAirDpad', AirDpadOptions> | Message<'stopAirDpad'> | Message<'startMotionEvents'> | Message<'stopMotionEvents'> | Message<'audio.createMemorySource', {
     requestId: number;
 } & CreateMemoryAudioSourceOptions> | Message<'audio.createStreamingSource', {
     requestId: number;
@@ -349,7 +376,7 @@ type OutgoingMessage = Message<'ready', {
     requestId: number;
 } & CloseAudioSourceOptions> | Message<'audio.updateSource', {
     requestId: number;
-} & UpdateAudioSourceOptions> | Telemetry;
+} & UpdateAudioSourceOptions> | Telemetry | Energy;
 type ExtractMessageData<T extends Message<string>, K extends T['type']> = Extract<T, {
     type: K;
 }> extends Message<K, infer D> ? D : undefined;
@@ -505,10 +532,13 @@ type CreateHapticOptions = {
 type PlayHapticOptions = {
     id: string;
 };
+type StopHapticOptions = {
+    id?: string;
+};
 type Haptics = {
     create(options: CreateHapticOptions): void;
     play(options: PlayHapticOptions): void;
-    stop(): void;
+    stop(options?: StopHapticOptions): void;
 };
 declare const haptics: Haptics;
 
@@ -563,13 +593,23 @@ type Quaternion = {
     z: number;
     w: number;
 };
+declare enum MagneticFieldAccuracy {
+    NOT_AVAILABLE = -1,
+    UNCALIBRATED = 0,
+    LOW = 1,
+    MEDIUM = 2,
+    HIGH = 3
+}
 type MotionEvent = {
+    sessionId: number | undefined;
     timestamp: number;
     attitude: Quaternion;
     gravity: Vector3;
     rotationRate: Vector3;
     rotationRateUnbiased: Vector3;
     userAcceleration: Vector3;
+    magneticField: Vector3;
+    magneticFieldAccuracy: MagneticFieldAccuracy;
 };
 declare const motion: {
     addHandler: (handler: (event: MotionEvent) => void) => void;
@@ -578,4 +618,4 @@ declare const motion: {
 
 declare const VERSION: string;
 
-export { type AirDpadOptions, AirMouseButton, AirMouseFilter, type AudioSettings, type AudioSettingsUpdateHandler, type AudioSource, AudioSourcePlaybackState, type AudioSourceState, type AudioSourceUpdateEvent, type CloseAudioSourceOptions, ControllerView, type CreateMemoryAudioSourceOptions, type CreateStreamingAudioSourceOptions, GamepadAxis, GamepadButton, HapticPreset, type IncomingMessage, type LayoutConfiguration, type MenuButtonState, type MenuMessageHandler, type MotionEvent, MouseButton, type MouseMovement, type MousePosition, type NetflixControllerError, type OpenTextInputOptions, type OrientationChangeEvent, type OutgoingMessage, type Quaternion, type ReceiveHandler, ScreenOrientation, type SendErrorCode, type SourceUpdateHandlerHandler, type TelemetryEvent, type TextInputEvent, type UpdateAudioSourceOptions, VERSION, type Vector3, airDpad, airMouse, audio, gameMessage, gameVariable, haptics, input, layout, menu, motion, storage, telemetry, textInput };
+export { type AirDpadOptions, AirMouseButton, AirMouseFilter, AirMouseImplementation, type AudioSettings, type AudioSettingsUpdateHandler, type AudioSource, AudioSourcePlaybackState, type AudioSourceState, type AudioSourceUpdateEvent, type CloseAudioSourceOptions, ControllerView, type CreateMemoryAudioSourceOptions, type CreateStreamingAudioSourceOptions, type EnergyUpdateEvent, GamepadAxis, GamepadButton, HapticPreset, type IncomingMessage, type LayoutConfiguration, MagneticFieldAccuracy, type MenuButtonState, type MenuMessageHandler, type MotionEvent, MouseButton, type MouseMovement, type MousePosition, type NetflixControllerError, type OpenTextInputOptions, type OrientationChangeEvent, type OutgoingMessage, type Quaternion, type ReceiveHandler, ScreenOrientation, type SendErrorCode, type SourceUpdateHandlerHandler, type TelemetryEvent, type TextInputEvent, type UpdateAudioSourceOptions, VERSION, type Vector3, airDpad, airMouse, audio, energy, gameMessage, gameVariable, haptics, input, layout, menu, motion, storage, telemetry, textInput };
