@@ -1,0 +1,54 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(#292638, #16121C);
+    color: #fff;
+    font-family: sans-serif;
+    height: 100svh;
+    overflow: hidden;
+    user-select: none;
+    touch-action: none; /* disable all default gestures for phones like pan, pinch and double tap zoom */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+#joystick-container {
+    flex-basis: 45%;
+    height: 100%;
+}
+
+#button-container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-basis: 55%;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Safe areas defined by Netflix's CSS variables and get injected on layout.beginInit() */
+.safe-area {
+    background: linear-gradient(#292638, #16121C);
+    position: absolute;
+    top: var(--safe-area-inset-top, 0px);
+    left: var(--safe-area-inset-left, 0px);
+    right: var(--safe-area-inset-right, 0px);
+    bottom: var(--safe-area-inset-bottom, 0px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.gesture-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Don't interfere with button touches */
+    z-index: 10;
+}

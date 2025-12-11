@@ -1,0 +1,49 @@
+.hexagon-button {
+  position: absolute;
+  height: max-content;
+  z-index: 2;
+}
+
+.hexagon-button svg {
+  width: 100%;
+  height: auto;
+}
+
+.hexagon-button--primary {
+  width: calc(54% - 7vh);
+  transform: translate(-78%, 18%);
+}
+
+.hexagon-button--secondary {
+  /* width: 56%; */
+  /* width: calc(56% - 5vh); */
+  width: calc(54% - 7vh);
+  transform: translate(0%, -35%);
+}
+
+.hexagon-button--tertiary {
+  width: 33%;
+  transform: translate(-31%, 78%);
+}
+
+.hexagon-button--singular {
+  width: 70%;
+  margin-right: 5%;
+}
+
+.hexagon-button--active svg {
+  filter: drop-shadow(0 0 10px #D62536);
+}
+
+/* Galaxy Z Fold 5 unfolded - stupid phone is so slim and long! */
+@media screen and (max-width: 900px) and (min-width: 870px) and (max-height: 360px) and (min-height: 330px) {
+  .hexagon-button--primary,
+  .hexagon-button--secondary {
+    width: calc(40% - 5vh);
+  }
+
+  .hexagon-button--tertiary {
+    width: 28%;
+    transform: translate(-20%, 78%);
+  }
+}
