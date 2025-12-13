@@ -1,3 +1,20 @@
+import { GamepadButton } from '../sdk/index.js';
+
+function mapLabelToGamepadButton(label) {
+  const buttonMap = {
+    'A': GamepadButton.BTN_A,
+    'B': GamepadButton.BTN_B,
+    'X': GamepadButton.BTN_X,
+    'Y': GamepadButton.BTN_Y
+  };
+  if (label in buttonMap) {
+    return buttonMap[label];
+  } else {
+    console.error(`Button label "${label}" not found in GamepadButton map`);
+    return null;
+  }
+}
+
 function parseGameMessage(data) {
   let parsedData;
 
@@ -7,7 +24,7 @@ function parseGameMessage(data) {
       parsedData = JSON.parse(data);
     } catch (err) {
       console.error('Failed to parse gameMessage string:', err);
-      return;
+      return null;
     }
   } else if (data instanceof Uint8Array || ArrayBuffer.isView(data)) {
     // If it's a byte array, decode it to a string first
@@ -17,15 +34,16 @@ function parseGameMessage(data) {
       parsedData = JSON.parse(jsonString);
     } catch (err) {
       console.error('Failed to decode/parse gameMessage bytes:', err);
-      return;
+      return null;
     }
   } else {
     console.warn('Unknown gameMessage type:', typeof data);
-    return;
+    return null;
   }
   return parsedData;
 }
 
 export {
+  mapLabelToGamepadButton,
   parseGameMessage
 }

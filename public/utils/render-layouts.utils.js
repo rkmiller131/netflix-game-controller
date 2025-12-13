@@ -1,37 +1,29 @@
-import { gameMessage } from '../sdk/index.js';
-import { AdvancedSwipeHexagonButton } from '../components/3_Button/AdvancedSwipeHexagonButton.js';
-import { BeginnerSwipeHexagonButton } from '../components/2_Button/BeginnerSwipeHexagonButton.js';
-import { OneButtonHexagon } from '../components/1_Button/OneButtonHexagon.js';
-import { TwoButtonHexagon } from '../components/2_Button/TwoButtonHexagon.js';
+import { OneButtonZone } from '../components/1_Button/OneButtonZone.js';
+import { QuadrantButtonZone } from '../components/4_Button/QuadrantButtonZone.js';
 
-let buttonA, buttonB, buttonX;
+let buttonA, buttonB, buttonX, buttonY;
 
-function renderAdvancedSwipeLayout(data) {
+function renderFourButtonLayout(data) {
   clearButtonReferences();
 
-  let startingPosition;
-  if (data && data.position) {
-    startingPosition = data.position;
-  } else {
-    startingPosition = 'offense';
-  }
-
-  buttonA = new AdvancedSwipeHexagonButton({
+  buttonA = new QuadrantButtonZone({
     label: 'A',
-    position: startingPosition,
-    variant: 'primary',
+    variant: 'bottom',
   });
 
-  buttonB = new AdvancedSwipeHexagonButton({
+  buttonB = new QuadrantButtonZone({
     label: 'B',
-    position: startingPosition,
-    variant: 'secondary',
+    variant: 'right',
   });
 
-  buttonX = new AdvancedSwipeHexagonButton({
+  buttonX = new QuadrantButtonZone({
     label: 'X',
-    position: startingPosition,
-    variant: 'tertiary',
+    variant: 'left',
+  });
+
+  buttonY = new QuadrantButtonZone({
+    label: 'Y',
+    variant: 'top',
   });
 
   const buttonContainer = document.getElementById('button-container');
@@ -40,9 +32,10 @@ function renderAdvancedSwipeLayout(data) {
   buttonContainer.appendChild(buttonA.getElement());
   buttonContainer.appendChild(buttonB.getElement());
   buttonContainer.appendChild(buttonX.getElement());
+  buttonContainer.appendChild(buttonY.getElement());
 }
 
-function renderBeginnerSwipeLayout(data) {
+function renderThreeButtonLayout(data) {
   clearButtonReferences();
 
   let startingPosition;
@@ -78,16 +71,10 @@ function renderOneButtonLayout(data) {
   // offense/defense. If, however, the game just receives "button A was pressed"
   // and has all the context switching logic within unreal blueprints, pass in
   // "none" for the position.
-  let startingPosition;
-  if (data && data.position) {
-    startingPosition = data.position;
-  } else {
-    startingPosition = 'none';
-  }
+console.log('called in renderonebuttonlayout');
 
-  buttonA = new OneButtonHexagon({
+  buttonA = new OneButtonZone({
     label: 'A',
-    position: startingPosition,
     variant: 'singular',
   });
 
@@ -95,53 +82,6 @@ function renderOneButtonLayout(data) {
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
 
   buttonContainer.appendChild(buttonA.getElement());
-}
-
-function renderTwoButtonLayout(data) {
-  clearButtonReferences();
-  // If the game wants to switch layout like contexts, can use the
-  // position attribute and setPosition method when switching between
-  // offense/defense. If, however, the game just receives "button A was pressed"
-  // and has all the context switching logic within unreal blueprints, pass in
-  // "none" for the position.
-  let startingPosition;
-  if (data && data.position) {
-    startingPosition = data.position;
-  } else {
-    startingPosition = 'none';
-  }
-
-  buttonA = new TwoButtonHexagon({
-    label: 'A',
-    position: startingPosition,
-    variant: 'primary'
-  });
-
-  buttonB = new TwoButtonHexagon({
-    label: 'B',
-    position: startingPosition,
-    variant: 'secondary'
-  });
-
-  const buttonContainer = document.getElementById('button-container');
-  if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
-
-  buttonContainer.appendChild(buttonA.getElement());
-  buttonContainer.appendChild(buttonB.getElement());
-}
-
-function updateButtonPosition(data) {
-  if (!buttonA || !data.position) return;
-
-  buttonA.setPosition(data.position);
-
-  if (buttonB) {
-    buttonB.setPosition(data.position);
-  }
-
-  if (buttonX) {
-    buttonX.setPosition(data.position);
-  }
 }
 
 function clearButtonReferences() {
@@ -157,12 +97,14 @@ function clearButtonReferences() {
     buttonX.destroy();
     buttonX = null;
   }
+  if (buttonY) {
+    buttonY.destroy();
+    buttonY = null;
+  }
 }
 
 export {
-  renderAdvancedSwipeLayout,
-  renderBeginnerSwipeLayout,
   renderOneButtonLayout,
-  renderTwoButtonLayout,
-  updateButtonPosition
+  renderThreeButtonLayout,
+  renderFourButtonLayout
 }

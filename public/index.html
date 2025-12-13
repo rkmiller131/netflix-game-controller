@@ -7,41 +7,47 @@
 
         <!-- CSS Files -->
         <link rel="stylesheet" href="globals.css">
-        <link rel="stylesheet" href="components/HexagonButton/HexagonButton.css">
+        <link rel="stylesheet" href="components/ZoneButton/ZoneButton.css">
         <link rel="stylesheet" href="components/Joystick/Joystick.css">
     </head>
     <body>
         <div class="safe-area">
-            <div id="joystick-container">
-                <div id="joystick-placeholder">
-                    <svg width="295" height="289" viewBox="0 0 295 289" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M147.339 2C227.569 2.00026 292.677 65.7621 292.677 144.5C292.677 223.238 227.569 287 147.339 287C67.1086 287 2 223.238 2 144.5C2 65.7619 67.1086 2 147.339 2Z" fill="url(#paint0_radial_235_19)" stroke="#151220" stroke-width="4"/>
-                        <g opacity="0.3">
-                            <path d="M146.531 74C186.551 74 219.063 105.811 219.063 145.135C219.063 184.459 186.551 216.27 146.531 216.27C106.511 216.269 74 184.459 74 145.135C74.0001 105.811 106.511 74.0002 146.531 74Z" fill="#ACA9BE" stroke="#151220" stroke-width="4"/>
-                            <g filter="url(#filter0_i_235_19)">
-                                <ellipse cx="146.534" cy="145.135" rx="61.4307" ry="60.2143" fill="#BEBAD5"/>
+            <div class="gradient-bloom"></div>
+            <div class="user-input-area">
+                <div id="joystick-container">
+                    <div id="joystick-placeholder">
+                        <svg width="295" height="289" viewBox="0 0 295 289" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M147.339 2C227.569 2.00026 292.677 65.7621 292.677 144.5C292.677 223.238 227.569 287 147.339 287C67.1086 287 2 223.238 2 144.5C2 65.7619 67.1086 2 147.339 2Z" stroke="url(#paint0_linear_260_17)" stroke-width="4"/>
+                            <g opacity="0.3">
+                                <path d="M146.531 74C186.551 74 219.063 105.811 219.063 145.135C219.063 184.459 186.551 216.27 146.531 216.27C106.511 216.269 74 184.459 74 145.135C74.0001 105.811 106.511 74.0002 146.531 74Z" fill="#ACA9BE" stroke="#151220" stroke-width="4"/>
+                                <g filter="url(#filter0_i_235_19)">
+                                    <ellipse cx="146.534" cy="145.135" rx="61.4307" ry="60.2143" fill="#BEBAD5"/>
+                                </g>
                             </g>
-                        </g>
-                        <defs>
-                            <filter id="filter0_i_235_19" x="85.1035" y="84.9209" width="122.861" height="124.429" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                                <feOffset dy="4"/>
-                                <feGaussianBlur stdDeviation="2"/>
-                                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-                                <feBlend mode="normal" in2="shape" result="effect1_innerShadow_235_19"/>
-                            </filter>
-                            <radialGradient id="paint0_radial_235_19" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(147.338 144.5) rotate(90) scale(140.5 143.338)">
-                                <stop stop-color="#292937"/>
-                                <stop offset="1" stop-color="#33303F"/>
-                            </radialGradient>
-                        </defs>
-                    </svg>
+                            <defs>
+                                <filter id="filter0_i_235_19" x="85.1035" y="84.9209" width="122.861" height="124.429" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                    <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+                                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                    <feOffset dy="4"/>
+                                    <feGaussianBlur stdDeviation="2"/>
+                                    <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+                                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                                    <feBlend mode="normal" in2="shape" result="effect1_innerShadow_235_19"/>
+                                </filter>
+                                <linearGradient id="paint0_linear_260_17" x1="179" y1="0" x2="179" y2="358" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#6A202B"/>
+                                    <stop offset="0.264423" stop-color="#561C3B"/>
+                                    <stop offset="0.692308" stop-color="#401644"/>
+                                    <stop offset="1" stop-color="#3A1551"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
                 </div>
+                <div id="button-container"></div>
             </div>
-            <div id="button-container"></div>
+            <div id="tactics-button">TACTICS</div>
         </div>
 
         <script type="module" src="sdk/index.js"></script>

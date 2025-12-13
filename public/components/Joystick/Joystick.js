@@ -57,13 +57,13 @@ export class Joystick {
     pivot.setAttribute('width', '317');
     pivot.setAttribute('height', '311');
     pivot.setAttribute('viewBox', '0 0 317 311');
-    pivot.setAttribute('fill', 'url(#pivotGradient)');
+    pivot.setAttribute('fill', 'none');
     pivot.setAttribute('id', 'pivot');
 
     const pivotPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     pivotPath.setAttribute('d', 'M158.339 12.5C238.836 12.5003 304.177 76.4765 304.177 155.5C304.177 234.523 238.836 298.5 158.339 298.5C77.8419 298.5 12.5 234.524 12.5 155.5C12.5 76.4764 77.8419 12.5 158.339 12.5Z');
-    pivotPath.setAttribute('stroke', '#D62536');
-    pivotPath.setAttribute('stroke-width', '5');
+    pivotPath.setAttribute('stroke', 'url(#pivotPathGradient)');
+    pivotPath.setAttribute('stroke-width', '4');
 
     pivot.appendChild(pivotPath);
 
@@ -80,8 +80,8 @@ export class Joystick {
     const thumbPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     thumbPath.setAttribute('d', 'M157.531 85C197.551 85 230.063 116.811 230.063 156.135C230.063 195.459 197.551 227.27 157.531 227.27C117.511 227.269 85 195.459 85 156.135C85.0001 116.811 117.511 85.0002 157.531 85Z');
     thumbPath.setAttribute('fill', '#ACA9BE');
-    thumbPath.setAttribute('stroke', '#D62536');
-    thumbPath.setAttribute('stroke-width', '4');
+    thumbPath.setAttribute('stroke', 'url(#pivotPathGradient)');
+    thumbPath.setAttribute('stroke-width', '5');
 
     const innerGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     innerGroup.setAttribute('filter', 'url(#filter1_i_235_19)');
@@ -285,9 +285,10 @@ const joystickDefs = `
       <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
       <feBlend mode="normal" in2="shape" result="effect1_innerShadow_235_19"/>
   </filter>
-  <radialGradient id="pivotGradient" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#16161dff" />
-    <stop offset="40%" stop-color="#20202bff" />
-    <stop offset="100%" stop-color="#33303F" />
-  </radialGradient>
+  <linearGradient id="pivotPathGradient" x1="179" y1="0" x2="179" y2="358" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#6A202B"/>
+    <stop offset="0.264423" stop-color="#561C3B"/>
+    <stop offset="0.692308" stop-color="#401644"/>
+    <stop offset="1" stop-color="#3A1551"/>
+  </linearGradient>
 `;

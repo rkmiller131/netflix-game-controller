@@ -5,7 +5,7 @@
 }
 
 body {
-    background: linear-gradient(#292638, #16121C);
+    background: #04050D;
     color: #fff;
     font-family: sans-serif;
     height: 100svh;
@@ -19,6 +19,15 @@ body {
 #joystick-container {
     flex-basis: 45%;
     height: 100%;
+    z-index: 1;
+}
+
+#tactics-button {
+    font-size: 1.5rem;
+    border: 1px solid white;
+    border-radius: 0 0.75rem 0rem 0.75rem;
+    padding: 1% 2%;
+    margin-bottom: 2%;
 }
 
 #button-container {
@@ -27,20 +36,43 @@ body {
     display: flex;
     flex-basis: 55%;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 /* Safe areas defined by Netflix's CSS variables and get injected on layout.beginInit() */
 .safe-area {
-    background: linear-gradient(#292638, #16121C);
+    /* background: linear-gradient(#292638, #16121C); */
+    background: #04050D;
     position: absolute;
     top: var(--safe-area-inset-top, 0px);
     left: var(--safe-area-inset-left, 0px);
     right: var(--safe-area-inset-right, 0px);
     bottom: var(--safe-area-inset-bottom, 0px);
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-input-area {
+    width: 100%;
+    height: 100%;
+    display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.gradient-bloom {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% - 60%));
+    width: 100dvw;
+    height: 100dvw;
+    border-radius: 50%;
+    background: linear-gradient(to right, #360B27, #270836);
+    filter: blur(10dvw);
+    opacity: 0.8;
+    z-index: 0;
 }
 
 .gesture-overlay {
