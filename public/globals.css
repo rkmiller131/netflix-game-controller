@@ -39,6 +39,14 @@ body {
     justify-content: center;
 }
 
+#zone-button-container {
+    width: 60%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    /* border: 2px solid white; */
+}
+
 /* Safe areas defined by Netflix's CSS variables and get injected on layout.beginInit() */
 .safe-area {
     /* background: linear-gradient(#292638, #16121C); */

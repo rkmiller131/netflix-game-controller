@@ -31,7 +31,6 @@ export class QuadrantButtonZone extends OneButtonZone {
 
     this.svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     this.svgPath.setAttribute('d', 'M400 191.515L0 191.515L191.515 -7.62939e-05C193.765 2.25036 196.817 3.51465 200 3.51465C203.183 3.51465 206.235 2.25036 208.485 -7.62939e-05L400 191.515Z');
-    // this.svgFillPath.setAttribute('fill', '#25776D'); // <- if you just want a solid color instead
     this.svgPath.setAttribute('fill', `transparent`);
 
     // SVG white stroke on tip and left border (75% of left edge)
@@ -53,6 +52,9 @@ export class QuadrantButtonZone extends OneButtonZone {
     this.svgLabel.setAttribute('pointer-events', 'none'); // ignore click events, container will handle.
     this.svgLabel.style.userSelect = 'none'; // prevent text cursor
     this.svgLabel.textContent = this.config.label;
+    this.svgLabel.style.transformBox = 'fill-box';
+    this.svgLabel.style.transformOrigin = 'center';
+    this.svgLabel.style.transform = this._getLabelTransformCSS();
 
     // Assemble elements
     svg.appendChild(this.svgPath);
@@ -80,9 +82,8 @@ export class QuadrantButtonZone extends OneButtonZone {
     } else {
         // Default state
         this.svgPath.setAttribute('stroke', 'transparent');
-        this.svgPath.setAttribute('stroke-width', '1');
         this.svgStrokePath.setAttribute('stroke', '#3B3A40');
-        this.svgStrokePath.setAttribute('stroke-width', '1');
+        this.svgStrokePath.setAttribute('stroke-width', '3');
         this.svgLabel.setAttribute('fill', '#3B3A40');
         this.element.classList.remove('zone-button--active');
     }

@@ -55,6 +55,9 @@ export class ZoneButton {
     this.svgLabel.setAttribute('pointer-events', 'none'); // ignore click events, container will handle.
     this.svgLabel.style.userSelect = 'none'; // prevent text cursor
     this.svgLabel.textContent = this.config.label;
+    this.svgLabel.style.transformBox = 'fill-box';
+    this.svgLabel.style.transformOrigin = 'center';
+    this.svgLabel.style.transform = this._getLabelTransformCSS();
 
     // Assemble elements
     svg.appendChild(this.svgPath);
@@ -107,6 +110,21 @@ export class ZoneButton {
         this.svgPath.setAttribute('stroke-width', '1');
         this.svgLabel.setAttribute('fill', '#3B3A40');
         this.element.classList.remove('zone-button--active');
+    }
+  }
+
+  _getLabelTransformCSS() {
+    switch (this.config.variant) {
+      case 'bottom':
+        return 'scale(1)';
+      case 'top':
+        return 'scaleY(-1)';
+      case 'left':
+        return 'rotate(-90deg)';
+      case 'right':
+        return 'rotate(90deg)';
+      default:
+        return 'scale(1)';
     }
   }
 

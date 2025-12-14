@@ -26,7 +26,7 @@ function renderFourButtonLayout(data) {
     variant: 'top',
   });
 
-  const buttonContainer = document.getElementById('button-container');
+  const buttonContainer = document.getElementById('zone-button-container');
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
 
   buttonContainer.appendChild(buttonA.getElement());
@@ -57,7 +57,7 @@ function renderThreeButtonLayout(data) {
     variant: 'secondary',
   });
 
-  const buttonContainer = document.getElementById('button-container');
+  const buttonContainer = document.getElementById('zone-button-container');
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
 
   buttonContainer.appendChild(buttonA.getElement());
