@@ -55,9 +55,6 @@ export class ZoneButton {
     this.svgLabel.setAttribute('pointer-events', 'none'); // ignore click events, container will handle.
     this.svgLabel.style.userSelect = 'none'; // prevent text cursor
     this.svgLabel.textContent = this.config.label;
-    this.svgLabel.style.transformBox = 'fill-box';
-    this.svgLabel.style.transformOrigin = 'center';
-    this.svgLabel.style.transform = this._getLabelTransformCSS();
 
     // Assemble elements
     svg.appendChild(this.svgPath);

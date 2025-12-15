@@ -4,7 +4,7 @@ import { DiamondButton } from '../components/4_Button/DiamondButton.js';
 
 let buttonA, buttonB, buttonX, buttonY;
 
-function renderFourButtonLayout(data) {
+function renderFourButtonZoneLayout() {
   clearButtonReferences();
 
   buttonA = new QuadrantButtonZone({
@@ -27,32 +27,47 @@ function renderFourButtonLayout(data) {
     variant: 'top',
   });
 
-  // buttonA = new DiamondButton({
-  //   label: 'A',
-  //   variant: 'bottom',
-  // });
-
-  // buttonB = new DiamondButton({
-  //   label: 'B',
-  //   variant: 'right',
-  // });
-
-  // buttonX = new DiamondButton({
-  //   label: 'X',
-  //   variant: 'left',
-  // });
-
-  // buttonY = new DiamondButton({
-  //   label: 'Y',
-  //   variant: 'top',
-  // });
-
   const buttonArea = document.getElementById('button-area');
   const buttonContainer = document.getElementById('button-container');
   if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
 
   // The button area normally centers the button, but for multi-zones, align to the right.
+  buttonArea.style.justifyContent = 'flex-end';
+
+  buttonContainer.appendChild(buttonA.getElement());
+  buttonContainer.appendChild(buttonB.getElement());
+  buttonContainer.appendChild(buttonX.getElement());
+  buttonContainer.appendChild(buttonY.getElement());
+}
+
+function renderFourButtonDiamondLayout(data) {
+  clearButtonReferences();
+
+  buttonA = new DiamondButton({
+    label: 'A',
+    variant: 'bottom',
+  });
+
+  buttonB = new DiamondButton({
+    label: 'B',
+    variant: 'right',
+  });
+
+  buttonX = new DiamondButton({
+    label: 'X',
+    variant: 'left',
+  });
+
+  buttonY = new DiamondButton({
+    label: 'Y',
+    variant: 'top',
+  });
+
+  const buttonArea = document.getElementById('button-area');
+  const buttonContainer = document.getElementById('button-container');
+  if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
+  if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
   buttonArea.style.justifyContent = 'flex-end';
 
   buttonContainer.appendChild(buttonA.getElement());
@@ -131,5 +146,6 @@ function clearButtonReferences() {
 export {
   renderOneButtonLayout,
   renderThreeButtonLayout,
-  renderFourButtonLayout
+  renderFourButtonZoneLayout,
+  renderFourButtonDiamondLayout
 }

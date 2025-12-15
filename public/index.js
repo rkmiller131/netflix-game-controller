@@ -3,7 +3,8 @@ import { layout, gameMessage } from './sdk/index.js';
 import {
     renderOneButtonLayout,
     renderThreeButtonLayout,
-    renderFourButtonLayout
+    renderFourButtonZoneLayout,
+    renderFourButtonDiamondLayout
 } from './utils/render-layouts.utils.js';
 import { parseGameMessage } from './utils/game-bridge.utils.js';
 import { Joystick } from './components/Joystick/Joystick.js';
@@ -41,6 +42,7 @@ layout.beginInit((error, config) => {
 });
 
 // FOR TESTING ON A WEB BROWSER WHERE THERE IS NO SDK ACCESS:
-renderOneButtonLayout();
-// renderFourButtonLayout();
+// renderOneButtonLayout();
+// renderFourButtonZoneLayout();
+renderFourButtonDiamondLayout();
 const joystick = new Joystick();
