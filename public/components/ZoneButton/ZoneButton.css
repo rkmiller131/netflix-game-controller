@@ -1,11 +1,23 @@
 .zone-button {
   position: absolute;
+  z-index: 2;
+  pointer-events: none; /* Ensure quadrant square container does not capture the click events */
+}
+
+.zone-button--active {
+  z-index: 3;
 }
 
 .zone-button svg {
   width: 100%;
   height: 100%;
+  pointer-events: none; /* Ensure the SVG container does not capture click events (it's a large rectangle around the whole shape, causes Z fighting) */
 }
+
+
+/* ----------------------------------------------------------------------------- */
+/* -----------------------------ONE BUTTON-------------------------------------- */
+/* ----------------------------------------------------------------------------- */
 
 .zone-button--singular {
   width: 70%;
@@ -19,7 +31,7 @@
 }
 
 /* ----------------------------------------------------------------------------- */
-/* ------------------------------QUADRANTS-------------------------------------- */
+/* ---------------------FOUR BUTTON - QUADRANT ZONES---------------------------- */
 /* ----------------------------------------------------------------------------- */
 
 .zone-button--bottom,
@@ -28,6 +40,13 @@
 .zone-button--right {
     width: 100%;
     height: 50%;
+}
+
+.zone-button--bottom svg path,
+.zone-button--top svg path,
+.zone-button--left svg path,
+.zone-button--right svg path {
+  pointer-events: auto; /* Only the actual triangle path should capture click events */
 }
 
 /* Bottom (A) */
