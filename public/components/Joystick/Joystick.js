@@ -14,9 +14,9 @@ export class Joystick {
   }
 
   _setupReferences() {
-    const joystickContainer = document.getElementById('joystick-container');
+    const joystickContainer = document.getElementById('joystick-area');
     if (!joystickContainer) {
-      console.warn('No joystick container found. Add <div id="joystick-container"></div> to your index.html');
+      console.warn('No joystick area found. Add <div id="joystick-area"></div> to your index.html');
       return;
     }
 
@@ -112,7 +112,7 @@ export class Joystick {
   }
 
   _bindEvents() {
-    const joystickContainer = document.getElementById('joystick-container');
+    const joystickContainer = document.getElementById('joystick-area');
     if (joystickContainer) {
       //                                  touchstart?
       joystickContainer.addEventListener('pointerdown', this._handlePointerDown.bind(this));

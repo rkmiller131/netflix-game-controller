@@ -41,6 +41,6 @@ layout.beginInit((error, config) => {
 });
 
 // FOR TESTING ON A WEB BROWSER WHERE THERE IS NO SDK ACCESS:
-// renderOneButtonLayout();
-renderFourButtonLayout();
+renderOneButtonLayout();
+// renderFourButtonLayout();
 const joystick = new Joystick();

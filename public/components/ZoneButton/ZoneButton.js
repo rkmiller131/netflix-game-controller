@@ -72,7 +72,7 @@ export class ZoneButton {
 
     // Mouse and touch events (visual changes, no functionality)
     this.svgPath.addEventListener('pointerdown', this._handlePointerDown.bind(this));
-    const buttonContainer = document.getElementById('button-container');
+    const buttonContainer = document.getElementById('button-area');
     if (buttonContainer) {
       buttonContainer.addEventListener('pointerup', this._handlePointerUpOutsideZone.bind(this));
     }
