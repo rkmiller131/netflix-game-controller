@@ -23,9 +23,9 @@ body {
 }
 
 #tactics-button {
-    /* position: absolute;
-    bottom: 2%; */
-    font-size: 1.3rem;
+    position: absolute;
+    bottom: 2%;
+    font-size: 1rem;
     border: 1px solid white;
     border-radius: 0 0.75rem 0rem 0.75rem;
     padding: 1% 2%;
@@ -42,7 +42,7 @@ body {
 
 #button-container {
     margin-right: 5%;
-    width: 75%;
+    width: 73%;
     height: auto;
     aspect-ratio: 1 / 1;
     position: relative;

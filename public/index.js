@@ -48,4 +48,4 @@ layout.beginInit((error, config) => {
 // renderThreeButtonZoneLayout();
 // renderFourButtonZoneLayout();
 // renderFourButtonDiamondLayout();
-// const joystick = new Joystick();
+const joystick = new Joystick();

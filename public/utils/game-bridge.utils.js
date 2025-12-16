@@ -5,7 +5,10 @@ function mapLabelToGamepadButton(label) {
     'A': GamepadButton.BTN_A,
     'B': GamepadButton.BTN_B,
     'X': GamepadButton.BTN_X,
-    'Y': GamepadButton.BTN_Y
+    'Y': GamepadButton.BTN_Y,
+    'Tactics': GamepadButton.BTN_DPAD_RIGHT,
+    'TacticsUp': GamepadButton.BTN_DPAD_UP,
+    'TacticsDown': GamepadButton.BTN_DPAD_DOWN
   };
   if (label in buttonMap) {
     return buttonMap[label];

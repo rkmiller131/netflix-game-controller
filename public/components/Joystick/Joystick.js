@@ -1,4 +1,5 @@
 import { input, GamepadAxis } from '../../sdk/index.js';
+import { mapLabelToGamepadButton } from '../../utils/game-bridge.utils.js';
 
 export class Joystick {
   constructor() {
@@ -8,6 +9,7 @@ export class Joystick {
     this.thumbRestContainer = null;
     this.thumbRest = null;
     this.isDraggingJoystick = false;
+    this.isTacticsMenuOpen = false;
 
     this._setupReferences();
     this._bindEvents();
@@ -114,7 +116,6 @@ export class Joystick {
   _bindEvents() {
     const joystickContainer = document.getElementById('joystick-area');
     if (joystickContainer) {
-      //                                  touchstart?
       joystickContainer.addEventListener('pointerdown', this._handlePointerDown.bind(this));
       joystickContainer.addEventListener('pointerup', this._handlePointerUp.bind(this));
       joystickContainer.addEventListener('pointermove', this._handlePointerMove.bind(this));
@@ -214,9 +215,21 @@ export class Joystick {
     const axisX = Math.cos(angleRad) * normalizedDistance;
     const axisY = Math.sin(angleRad) * normalizedDistance;
 
-    // Send to Netflix SDK
-    input.setGamepadAxis(GamepadAxis.X, axisX);
-    input.setGamepadAxis(GamepadAxis.Y, axisY);
+    if (this.isTacticsMenuOpen) {
+      // Instead of sending a gamepad axis, the tactics menu uses the D Pad
+      const isDown = axisY > 0.9;
+      const isUp = axisY < -0.9;
+      if (isDown) {
+        input.setGamePadButton(mapLabelToGamepadButton('TacticsDown'), true);
+      } else if (isUp) {
+        input.setGamePadButton(mapLabelToGamepadButton('TacticsUp'), true);
+      }
+    } else {
+      // Send regular axis tilt to Netflix
+      input.setGamepadAxis(GamepadAxis.X, axisX);
+      input.setGamepadAxis(GamepadAxis.Y, axisY);
+    }
+
   }
 
   // Responsible for spawning/de-spawning the active joystick base
