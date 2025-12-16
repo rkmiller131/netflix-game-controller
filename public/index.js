@@ -17,22 +17,24 @@ layout.beginInit((error, config) => {
         return;
     }
 
-    // Just render beginner controller scheme by default and user can switch
-    // with another menu button or setting or something.
-    renderOneButtonZoneLayout();
+    // Just render quadrant zone layout to start with - user can switch to other layouts with messages.
+    renderFourButtonZoneLayout();
     const joystick = new Joystick();
 
     // An event handler for receiving messages from the game -> this controller
     gameMessage.addReceiveHandler((data) => {
         const parsedData = parseGameMessage(data);
-        if (parsedData.layoutType === 'oneButton') {
-            renderOneButtonLayout(parsedData);
+        if (parsedData.layoutType === 'oneButtonZone') {
+            renderOneButtonZoneLayout();
         }
-        if (parsedData.layoutType === 'threeButton') {
-            renderThreeButtonLayout(parsedData);
+        if (parsedData.layoutType === 'threeButtonZone') {
+            renderThreeButtonZoneLayout();
         }
-        if (parsedData.layoutType === 'fourButton') {
-            renderFourButtonLayout(parsedData);
+        if (parsedData.layoutType === 'fourButtonZone') {
+            renderFourButtonZoneLayout();
+        }
+        if (parsedData.layoutType === 'fourButtonDiamond') {
+            renderFourButtonDiamondLayout();
         }
     });
 
@@ -43,7 +45,7 @@ layout.beginInit((error, config) => {
 
 // FOR TESTING ON A WEB BROWSER WHERE THERE IS NO SDK ACCESS:
 // renderOneButtonZoneLayout();
-renderThreeButtonZoneLayout();
+// renderThreeButtonZoneLayout();
 // renderFourButtonZoneLayout();
 // renderFourButtonDiamondLayout();
-const joystick = new Joystick();
+// const joystick = new Joystick();
