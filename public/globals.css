@@ -22,15 +22,6 @@ body {
     z-index: 1;
 }
 
-#tactics-button {
-    position: absolute;
-    bottom: 2%;
-    font-size: 1rem;
-    border: 1px solid white;
-    border-radius: 0 0.75rem 0rem 0.75rem;
-    padding: 1% 2%;
-}
-
 #button-area {
     position: relative;
     height: 100%;
@@ -47,6 +38,13 @@ body {
     aspect-ratio: 1 / 1;
     position: relative;
     /* border: 2px solid white; */
+}
+
+#footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Safe areas defined by Netflix's CSS variables and get injected on layout.beginInit() */

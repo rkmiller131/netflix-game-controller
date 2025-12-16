@@ -8,6 +8,7 @@ import {
 } from './utils/render-layouts.utils.js';
 import { parseGameMessage } from './utils/game-bridge.utils.js';
 import { Joystick } from './components/Joystick/Joystick.js';
+import { TacticsButton } from './components/TacticsButton/TacticsButton.js';
 
 layout.lockOrientation('landscape');
 
@@ -49,3 +50,4 @@ layout.beginInit((error, config) => {
 // renderFourButtonZoneLayout();
 // renderFourButtonDiamondLayout();
 const joystick = new Joystick();
+const tacticsButton = new TacticsButton();

@@ -113,6 +113,11 @@ export class Joystick {
     return joystickElement;
   }
 
+  /**
+   * ----------------------------------------------------------------
+   * Private methods
+   * ----------------------------------------------------------------
+  */
   _bindEvents() {
     const joystickContainer = document.getElementById('joystick-area');
     if (joystickContainer) {
@@ -273,6 +278,15 @@ export class Joystick {
       this.thumbRest.style.transform = `translateY(-${scaledDistance}%)`;
       this._sendAxisInput(angle, distancePercentage);
     }
+  }
+
+  /**
+   * ----------------------------------------------------------------
+   * Public methods
+   * ----------------------------------------------------------------
+  */
+  toggleTacticsMenu() {
+    this.isTacticsMenuOpen = !this.isTacticsMenuOpen;
   }
 }
 

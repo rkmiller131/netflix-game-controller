@@ -1,0 +1,21 @@
+#tactics-button {
+  all: unset;
+
+  position: absolute;
+  bottom: 2%;
+  padding: 0.5rem 1rem;
+
+  font-size: 1rem;
+
+  border: 1px solid white;
+  border-radius: 0.25rem;
+
+  user-select: none;
+  touch-action: manipulation;
+}
+
+#tactics-button.active {
+  transform: scale(0.97);
+  color: #D62536;
+  border-color: #D62536;
+}
