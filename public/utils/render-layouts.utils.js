@@ -1,8 +1,56 @@
 import { OneButtonZone } from '../components/1_Button/OneButtonZone.js';
+import { ThreeButtonZone } from '../components/3_Button/ThreeButtonZone.js';
 import { QuadrantButtonZone } from '../components/4_Button/QuadrantButtonZone.js';
 import { DiamondButton } from '../components/4_Button/DiamondButton.js';
 
 let buttonA, buttonB, buttonX, buttonY;
+
+function renderOneButtonZoneLayout() {
+  clearButtonReferences();
+
+  buttonA = new OneButtonZone({
+    label: 'A',
+    variant: 'singular',
+  });
+
+  const buttonContainer = document.getElementById('button-area');
+  if (!buttonContainer) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
+
+  buttonContainer.appendChild(buttonA.getElement());
+}
+
+function renderThreeButtonZoneLayout() {
+  clearButtonReferences();
+
+  buttonA = new ThreeButtonZone({
+    label: 'A',
+    variant: 'bottom',
+  });
+
+  buttonB = new ThreeButtonZone({
+    label: 'B',
+    variant: 'right',
+  });
+
+  buttonX = new ThreeButtonZone({
+    label: 'X',
+    variant: 'left',
+  });
+
+  const buttonArea = document.getElementById('button-area');
+  const buttonContainer = document.getElementById('button-container');
+  if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
+  if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
+
+  // The button area normally centers the button, but for multi-zones, align to the right.
+  buttonArea.style.justifyContent = 'flex-end';
+  // For the tri-zone configuration, the button container needs to be a circle (buttons are like wedges of a pie shape)
+  buttonContainer.style.borderRadius = '50%';
+
+  buttonContainer.appendChild(buttonA.getElement());
+  buttonContainer.appendChild(buttonB.getElement());
+  buttonContainer.appendChild(buttonX.getElement());
+}
 
 function renderFourButtonZoneLayout() {
   clearButtonReferences();
@@ -31,8 +79,6 @@ function renderFourButtonZoneLayout() {
   const buttonContainer = document.getElementById('button-container');
   if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
-
-  // The button area normally centers the button, but for multi-zones, align to the right.
   buttonArea.style.justifyContent = 'flex-end';
 
   buttonContainer.appendChild(buttonA.getElement());
@@ -41,7 +87,7 @@ function renderFourButtonZoneLayout() {
   buttonContainer.appendChild(buttonY.getElement());
 }
 
-function renderFourButtonDiamondLayout(data) {
+function renderFourButtonDiamondLayout() {
   clearButtonReferences();
 
   buttonA = new DiamondButton({
@@ -76,54 +122,6 @@ function renderFourButtonDiamondLayout(data) {
   buttonContainer.appendChild(buttonY.getElement());
 }
 
-function renderThreeButtonLayout(data) {
-  clearButtonReferences();
-
-  let startingPosition;
-  if (data && data.position) {
-    startingPosition = data.position;
-  } else {
-    startingPosition = 'offense';
-  }
-
-  buttonA = new BeginnerSwipeHexagonButton({
-    label: 'A',
-    position: startingPosition,
-    variant: 'primary',
-  });
-
-  buttonB = new BeginnerSwipeHexagonButton({
-    label: 'B',
-    position: startingPosition,
-    variant: 'secondary',
-  });
-
-  const buttonContainer = document.getElementById('button-container');
-  if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
-
-  buttonContainer.appendChild(buttonA.getElement());
-  buttonContainer.appendChild(buttonB.getElement());
-}
-
-function renderOneButtonLayout(data) {
-  clearButtonReferences();
-  // If the game wants to switch layout like contexts, can use the
-  // position attribute and setPosition method when switching between
-  // offense/defense. If, however, the game just receives "button A was pressed"
-  // and has all the context switching logic within unreal blueprints, pass in
-  // "none" for the position.
-
-  buttonA = new OneButtonZone({
-    label: 'A',
-    variant: 'singular',
-  });
-
-  const buttonContainer = document.getElementById('button-area');
-  if (!buttonContainer) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
-
-  buttonContainer.appendChild(buttonA.getElement());
-}
-
 function clearButtonReferences() {
   if (buttonA) {
     buttonA.destroy();
@@ -144,8 +142,8 @@ function clearButtonReferences() {
 }
 
 export {
-  renderOneButtonLayout,
-  renderThreeButtonLayout,
+  renderOneButtonZoneLayout,
+  renderThreeButtonZoneLayout,
   renderFourButtonZoneLayout,
   renderFourButtonDiamondLayout
 }

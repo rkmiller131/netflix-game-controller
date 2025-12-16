@@ -1,8 +1,8 @@
 // Import the SDK (adjust relative path from public folder)
 import { layout, gameMessage } from './sdk/index.js';
 import {
-    renderOneButtonLayout,
-    renderThreeButtonLayout,
+    renderOneButtonZoneLayout,
+    renderThreeButtonZoneLayout,
     renderFourButtonZoneLayout,
     renderFourButtonDiamondLayout
 } from './utils/render-layouts.utils.js';
@@ -19,7 +19,7 @@ layout.beginInit((error, config) => {
 
     // Just render beginner controller scheme by default and user can switch
     // with another menu button or setting or something.
-    renderOneButtonLayout();
+    renderOneButtonZoneLayout();
     const joystick = new Joystick();
 
     // An event handler for receiving messages from the game -> this controller
@@ -42,7 +42,8 @@ layout.beginInit((error, config) => {
 });
 
 // FOR TESTING ON A WEB BROWSER WHERE THERE IS NO SDK ACCESS:
-// renderOneButtonLayout();
+// renderOneButtonZoneLayout();
+renderThreeButtonZoneLayout();
 // renderFourButtonZoneLayout();
-renderFourButtonDiamondLayout();
+// renderFourButtonDiamondLayout();
 const joystick = new Joystick();
