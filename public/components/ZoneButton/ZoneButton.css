@@ -3,8 +3,9 @@
   z-index: 2;
 }
 
-.zone-button--active {
-  z-index: 3;
+.zone-button--active,
+.wedge-button--active {
+  z-index: 5;
 }
 
 .zone-button svg {
@@ -64,12 +65,10 @@
 
 .wedge-button--bottom {
   transform: translate(-0.5%, -66.67%) rotate(120deg);
-  z-index: 3;
 }
 
 .wedge-button--left {
   transform: translate(-0.5%, -66.67%) rotate(240deg);
-  z-index: 5;
 }
 
 /* ----------------------------------------------------------------------------- */

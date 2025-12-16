@@ -31,7 +31,7 @@ export class ThreeButtonZone extends OneButtonZone {
 
     this.svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     this.svgPath.setAttribute('d', 'M1 1C36.1069 1.00089 70.5951 10.2428 100.998 27.7968C131.401 45.3509 156.648 70.5985 174.201 101.002C191.754 131.406 200.995 165.894 200.995 201.001C200.995 236.108 191.753 270.597 174.2 301L11.4 207C12.4535 205.175 13.008 203.105 13.0077 200.998C13.0074 198.891 12.4522 196.821 11.3981 194.997C10.3439 193.172 8.828 191.657 7.0027 190.605C5.1774 189.552 3.10709 188.999 1 189L1 1Z');
-    this.svgPath.setAttribute('fill', 'black');
+    this.svgPath.setAttribute('fill', 'transparent');
 
     // SVG Left Divider stroke path
     this.svgStrokePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -53,6 +53,15 @@ export class ThreeButtonZone extends OneButtonZone {
     this.svgLabel.setAttribute('pointer-events', 'none'); // ignore click events, container will handle.
     this.svgLabel.style.userSelect = 'none'; // prevent text cursor
     this.svgLabel.textContent = this.config.label;
+    const labelRotations = {
+        'right': 0,
+        'bottom': 120,
+        'left': 240
+    };
+    const labelRotation = labelRotations[this.config.variant];
+    // Counter-rotate the label to keep it upright
+    this.svgLabel.setAttribute('transform', `rotate(${-labelRotation} 100.5 150.5)`);
+    // 100.5, 150.5 is the center of the SVG viewBox (201/2, 301/2)
 
     // Assemble elements
     svg.appendChild(this.svgPath);
@@ -76,14 +85,14 @@ export class ThreeButtonZone extends OneButtonZone {
         this.svgStrokePath.setAttribute('stroke', '#D62536');
         this.svgStrokePath.setAttribute('stroke-width', '3');
         this.svgLabel.setAttribute('fill', '#D62536');
-        this.element.classList.add('zone-button--active');
+        this.element.classList.add('wedge-button--active');
     } else {
         // Default state
         this.svgPath.setAttribute('stroke', 'transparent');
         this.svgStrokePath.setAttribute('stroke', '#3B3A40');
         this.svgStrokePath.setAttribute('stroke-width', '3');
         this.svgLabel.setAttribute('fill', '#3B3A40');
-        this.element.classList.remove('zone-button--active');
+        this.element.classList.remove('wedge-button--active');
     }
   }
 }
