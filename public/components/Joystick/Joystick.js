@@ -11,6 +11,10 @@ export class Joystick {
     this.isDraggingJoystick = false;
     this.isTacticsMenuOpen = false;
 
+    this._onPointerDown = null;
+    this._onPointerUp = null;
+    this._onPointerMove = null;
+
     this._setupReferences();
     this._bindEvents();
   }
@@ -119,13 +123,16 @@ export class Joystick {
    * ----------------------------------------------------------------
   */
   _bindEvents() {
-    const joystickContainer = document.getElementById('joystick-area');
-    if (joystickContainer) {
-      joystickContainer.addEventListener('pointerdown', this._handlePointerDown.bind(this));
-      joystickContainer.addEventListener('pointerup', this._handlePointerUp.bind(this));
-      joystickContainer.addEventListener('pointermove', this._handlePointerMove.bind(this));
-      // handle pointer cancel events as a pointer up (finish the dragging)?
-    }
+    if (!this.joystickContainer) return;
+
+    this._onPointerDown = this._handlePointerDown.bind(this);
+    this._onPointerUp = this._handlePointerUp.bind(this);
+    this._onPointerMove = this._handlePointerMove.bind(this);
+
+    this.joystickContainer.addEventListener('pointerdown', this._onPointerDown);
+    this.joystickContainer.addEventListener('pointerup', this._onPointerUp);
+    this.joystickContainer.addEventListener('pointermove', this._onPointerMove);
+    // handle pointer cancel events as a pointer up (finish the dragging)?
   }
 
   _setJoystickCoordinates(clientX, clientY) {
@@ -285,7 +292,44 @@ export class Joystick {
    * Public methods
    * ----------------------------------------------------------------
   */
-  toggleTacticsMenu() {
+ destroy() {
+  // Prevent sticking if destoyed mid-drag or mid-input
+  input.setGamepadAxis(GamepadAxis.X, 0);
+  input.setGamepadAxis(GamepadAxis.Y, 0);
+
+  // Remove pointer event listeners
+  if (this.joystickContainer) {
+    if (this._onPointerDown) {
+      this.joystickContainer.removeEventListener('pointerdown', this._onPointerDown);
+    }
+    if (this._onPointerUp) {
+      this.joystickContainer.removeEventListener('pointerup', this._onPointerUp);
+    }
+    if (this._onPointerMove) {
+      this.joystickContainer.removeEventListener('pointermove', this._onPointerMove);
+    }
+  }
+
+  // Remove active joystick DOM
+  if (this.activeJoystick) {
+    this.activeJoystick.remove();
+  }
+
+  // Clear references
+  this.joystickContainer = null;
+  this.placeholder = null;
+  this.activeJoystick = null;
+  this.thumbRestContainer = null;
+  this.thumbRest = null;
+
+  this._onPointerDown = null;
+  this._onPointerUp = null;
+  this._onPointerMove = null;
+
+  this.isDraggingJoystick = false;
+ }
+
+ toggleTacticsMenu() {
     this.isTacticsMenuOpen = !this.isTacticsMenuOpen;
   }
 }

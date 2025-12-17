@@ -1,14 +1,13 @@
 // Import the SDK (adjust relative path from public folder)
 import { layout, gameMessage } from './sdk/index.js';
-import {
-    renderOneButtonZoneLayout,
-    renderThreeButtonZoneLayout,
-    renderFourButtonZoneLayout,
-    renderFourButtonDiamondLayout
-} from './utils/render-layouts.utils.js';
+// import {
+//     renderOneButtonZoneLayout,
+//     renderThreeButtonZoneLayout,
+//     renderFourButtonZoneLayout,
+//     renderFourButtonDiamondLayout
+// } from './utils/render-layouts.utils.js';
 import { parseGameMessage } from './utils/game-bridge.utils.js';
-import { Joystick } from './components/Joystick/Joystick.js';
-import { TacticsButton } from './components/TacticsButton/TacticsButton.js';
+import { Controller } from './components/Controller/Controller.js';
 
 layout.lockOrientation('landscape');
 
@@ -18,25 +17,13 @@ layout.beginInit((error, config) => {
         return;
     }
 
-    // Just render quadrant zone layout to start with - user can switch to other layouts with messages.
-    renderFourButtonZoneLayout();
-    const joystick = new Joystick();
+    // Starting ngc controller; User can switch to other layouts with game messages.
+    const controller = new Controller();
 
     // An event handler for receiving messages from the game -> this controller
     gameMessage.addReceiveHandler((data) => {
         const parsedData = parseGameMessage(data);
-        if (parsedData.layoutType === 'oneButtonZone') {
-            renderOneButtonZoneLayout();
-        }
-        if (parsedData.layoutType === 'threeButtonZone') {
-            renderThreeButtonZoneLayout();
-        }
-        if (parsedData.layoutType === 'fourButtonZone') {
-            renderFourButtonZoneLayout();
-        }
-        if (parsedData.layoutType === 'fourButtonDiamond') {
-            renderFourButtonDiamondLayout();
-        }
+        controller.switchLayout(parsedData.layoutType);
     });
 
     layout.finishInit(() => {
@@ -49,5 +36,7 @@ layout.beginInit((error, config) => {
 // renderThreeButtonZoneLayout();
 // renderFourButtonZoneLayout();
 // renderFourButtonDiamondLayout();
-const joystick = new Joystick();
-const tacticsButton = new TacticsButton();
+// const joystick = new Joystick();
+// const tacticsButton = new TacticsButton();
+// const controller = new Controller();
+// controller.switchLayout('oneButtonZone')
