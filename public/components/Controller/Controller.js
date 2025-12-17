@@ -35,8 +35,12 @@ export class Controller {
    * ----------------------------------------------------------------
   */
   _handleTacticsMenuClick() {
-    this.joystick.toggleTacticsMenu();
+    // this.joystick.toggleTacticsMenu();
     input.setGamepadButton(mapLabelToGamepadButton('Tactics'), true);
+    input.setGamepadButton(mapLabelToGamepadButton('TacticsUp'), true);
+    input.setGamepadButton(mapLabelToGamepadButton('A'), true);
+    console.log('tactics clicked!')
+    this.tacticsButton.toggleActive();
   }
 
   _renderOneButtonZoneLayout() {
