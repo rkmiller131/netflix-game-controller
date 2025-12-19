@@ -42,6 +42,12 @@ export class OneButtonZone extends ZoneButton {
     //     this.holdStartTime = Date.now() - this.holdThreshold;
     //   }
     // }, this.holdThreshold);
+
+    const { label } = this.config;
+    const buttonType = mapLabelToGamepadButton(label);
+    if (buttonType) {
+      input.setGamepadButton(buttonType, true);
+    }
   }
 
   _handlePointerUpOutsideZone(e) {
@@ -49,7 +55,7 @@ export class OneButtonZone extends ZoneButton {
     if (!this.isPointerDown) return;
 
     if (this.isHolding) {
-      this._handleTouchHold(e);
+      this._triggerTouchHold(e);
     }
 
     this.isPointerDown = false;
@@ -66,15 +72,7 @@ export class OneButtonZone extends ZoneButton {
     }
   }
 
-  _handleTap() {
-    const { label } = this.config;
-    const buttonType = mapLabelToGamepadButton(label);
-
-    console.log(`Pressed ${label}`);
-    input.setGamepadButton(buttonType, true);
-  }
-
-  _handleTouchHold() {
+  _triggerTouchHold() {
     const { label, variant } = this.config;
     const duration = Date.now() - this.holdStartTime;
     console.log(`${label} Button Held for ${duration} ms`);
@@ -82,7 +80,11 @@ export class OneButtonZone extends ZoneButton {
 
   _triggerTap() {
     if (this.isHolding) return;
-    this._handleTap();
+    const { label } = this.config;
+    const buttonType = mapLabelToGamepadButton(label);
+
+    console.log(`Pressed ${label}`);
+    input.setGamepadButton(buttonType, false);
   }
 
   _clearTimer(timerRef) {
