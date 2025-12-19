@@ -37,10 +37,32 @@ export class Controller {
   _handleTacticsMenuClick() {
     // this.joystick.toggleTacticsMenu();
     input.setGamepadButton(mapLabelToGamepadButton('Tactics'), true);
-    input.setGamepadButton(mapLabelToGamepadButton('TacticsUp'), true);
-    input.setGamepadButton(mapLabelToGamepadButton('A'), true);
-    console.log('tactics clicked!')
-    this.tacticsButton.toggleActive();
+    setTimeout(() => {
+      // Release Tactics
+      input.setGamepadButton(mapLabelToGamepadButton('Tactics'), false);
+
+      // Small delay, then press Up
+      setTimeout(() => {
+        input.setGamepadButton(mapLabelToGamepadButton('TacticsUp'), true);
+
+        setTimeout(() => {
+          // Release Up
+          input.setGamepadButton(mapLabelToGamepadButton('TacticsUp'), false);
+
+          // Small delay, then press A to confirm
+          setTimeout(() => {
+            input.setGamepadButton(mapLabelToGamepadButton('A'), true);
+
+            setTimeout(() => {
+              // Release A
+              input.setGamepadButton(mapLabelToGamepadButton('A'), false);
+              console.log('Tactics menu sequence complete!');
+              this.tacticsButton.toggleActive();
+            }, 100); // Release A after 100ms
+          }, 50); // Wait 50ms before pressing A
+        }, 100); // Release Up after 100ms
+      }, 50); // Wait 50ms before pressing Up
+    }, 150); // Release Tactics after 150ms (menu needs time to open)
   }
 
   _renderOneButtonZoneLayout() {
