@@ -26,7 +26,7 @@ export class Controller {
     this.buttonX = null;
     this.buttonY = null;
 
-    this._renderFourButtonZoneLayout()
+    this._renderFourButtonDiamondLayout()
   }
 
   /**
