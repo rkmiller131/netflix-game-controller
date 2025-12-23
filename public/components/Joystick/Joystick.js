@@ -9,7 +9,6 @@ export class Joystick {
     this.thumbRestContainer = null;
     this.thumbRest = null;
     this.isDraggingJoystick = false;
-    this.isTacticsMenuOpen = false;
 
     this._onPointerDown = null;
     this._onPointerUp = null;
@@ -46,6 +45,9 @@ export class Joystick {
 
     this.thumbRestContainer = thumbRestContainer;
     this.thumbRest = thumbRest;
+
+    // Position the active joystick at placeholder location on initialization
+    this._positionJoystickAtPlaceholder();
   }
 
   _buildActiveJoystick() {
@@ -58,16 +60,16 @@ export class Joystick {
     const joystickElement = document.createElement('div');
     joystickElement.id = 'active-joystick';
 
-    // SVG of the base joystick (pivot handle)
+    // SVG of the base joystick (pivot handle) - matches placeholder dimensions
     const pivot = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    pivot.setAttribute('width', '317');
-    pivot.setAttribute('height', '311');
-    pivot.setAttribute('viewBox', '0 0 317 311');
+    pivot.setAttribute('width', '295');
+    pivot.setAttribute('height', '289');
+    pivot.setAttribute('viewBox', '0 0 295 289');
     pivot.setAttribute('fill', 'none');
     pivot.setAttribute('id', 'pivot');
 
     const pivotPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    pivotPath.setAttribute('d', 'M158.339 12.5C238.836 12.5003 304.177 76.4765 304.177 155.5C304.177 234.523 238.836 298.5 158.339 298.5C77.8419 298.5 12.5 234.524 12.5 155.5C12.5 76.4764 77.8419 12.5 158.339 12.5Z');
+    pivotPath.setAttribute('d', 'M147.339 2C227.569 2.00026 292.677 65.7621 292.677 144.5C292.677 223.238 227.569 287 147.339 287C67.1086 287 2 223.238 2 144.5C2 65.7619 67.1086 2 147.339 2Z');
     pivotPath.setAttribute('stroke', 'url(#pivotPathGradient)');
     pivotPath.setAttribute('stroke-width', '4');
 
@@ -78,13 +80,13 @@ export class Joystick {
     thumbRestContainer.id = 'thumb-rest-container';
 
     const thumbRest = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    thumbRest.setAttribute('viewBox', '0 0 317 311'); // Thumb coordinates are defined in same coordinate space as pivot
+    thumbRest.setAttribute('viewBox', '0 0 295 289'); // Match placeholder coordinate space
     thumbRest.setAttribute('fill', 'none');
-    thumbRest.style.transformOrigin = '158.338px 155.5px';
+    thumbRest.style.transformOrigin = '147.338px 144.5px'; // Center point of placeholder
     thumbRest.setAttribute('id', 'thumb-rest');
 
     const thumbPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    thumbPath.setAttribute('d', 'M157.531 85C197.551 85 230.063 116.811 230.063 156.135C230.063 195.459 197.551 227.27 157.531 227.27C117.511 227.269 85 195.459 85 156.135C85.0001 116.811 117.511 85.0002 157.531 85Z');
+    thumbPath.setAttribute('d', 'M146.531 74C186.551 74 219.063 105.811 219.063 145.135C219.063 184.459 186.551 216.27 146.531 216.27C106.511 216.269 74 184.459 74 145.135C74.0001 105.811 106.511 74.0002 146.531 74Z');
     thumbPath.setAttribute('fill', '#ACA9BE');
     thumbPath.setAttribute('stroke', 'url(#pivotPathGradient)');
     thumbPath.setAttribute('stroke-width', '5');
@@ -93,8 +95,8 @@ export class Joystick {
     innerGroup.setAttribute('filter', 'url(#filter1_i_235_19)');
 
     const innerEllipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
-    innerEllipse.setAttribute('cx', '157.534');
-    innerEllipse.setAttribute('cy', '156.135');
+    innerEllipse.setAttribute('cx', '146.534');
+    innerEllipse.setAttribute('cy', '145.135');
     innerEllipse.setAttribute('rx', '61.4307');
     innerEllipse.setAttribute('ry', '60.2143');
     innerEllipse.setAttribute('fill', '#BEBAD5');
@@ -135,32 +137,56 @@ export class Joystick {
     // handle pointer cancel events as a pointer up (finish the dragging)?
   }
 
-  _setJoystickCoordinates(clientX, clientY) {
-    const parentRect = this.joystickContainer.getBoundingClientRect();
+  // ----------------------------------------------------------------------------
+  // Repositions Joystick based on touch location -------------------------------
+  // ----------------------------------------------------------------------------
+  // _setJoystickCoordinates(clientX, clientY) {
+  //   const parentRect = this.joystickContainer.getBoundingClientRect();
 
-    // Match the active joystick's size to the placeholder size
+  //   // Match the active joystick's size to the placeholder size
+  //   const placeholderSVG = this.placeholder.querySelector('svg');
+  //   const placeholderRect = placeholderSVG.getBoundingClientRect();
+  //   this.activeJoystick.style.width = `${placeholderRect.width}px`;
+  //   this.activeJoystick.style.height = `${placeholderRect.height}px`;
+
+  //   // Convert from pointer coordinates to parent coordinates
+  //   let x = clientX - parentRect.left;
+  //   let y = clientY - parentRect.top;
+
+  //   // Center the joystick at the touched coordinates
+  //   x = x - placeholderRect.width / 2;
+  //   y = y - placeholderRect.height / 2;
+
+  //   // Clamp within the parent container bounds (so it doesn't bleed past)
+  //   if (x < 0) x = 0;
+  //   if (y < 0) y = 0;
+  //   if (x + placeholderRect.width > parentRect.width) {
+  //     x = parentRect.width - placeholderRect.width;
+  //   }
+  //   if (y + placeholderRect.height > parentRect.height) {
+  //     y = parentRect.height - placeholderRect.height;
+  //   }
+
+  //   this.activeJoystick.style.left = `${x}px`;
+  //   this.activeJoystick.style.top = `${y}px`;
+  // }
+
+  // -------------------------------------------------------------------------
+  // Joystick that doesn't move ----------------------------------------------
+  // -------------------------------------------------------------------------
+  _positionJoystickAtPlaceholder() {
+    // Match the active joystick's size and position to the placeholder
     const placeholderSVG = this.placeholder.querySelector('svg');
     const placeholderRect = placeholderSVG.getBoundingClientRect();
+    const parentRect = this.joystickContainer.getBoundingClientRect();
+
+    // Set size to match placeholder
     this.activeJoystick.style.width = `${placeholderRect.width}px`;
     this.activeJoystick.style.height = `${placeholderRect.height}px`;
 
-    // Convert from pointer coordinates to parent coordinates
-    let x = clientX - parentRect.left;
-    let y = clientY - parentRect.top;
-
-    // Center the joystick at the touched coordinates
-    x = x - placeholderRect.width / 2;
-    y = y - placeholderRect.height / 2;
-
-    // Clamp within the parent container bounds (so it doesn't bleed past)
-    if (x < 0) x = 0;
-    if (y < 0) y = 0;
-    if (x + placeholderRect.width > parentRect.width) {
-      x = parentRect.width - placeholderRect.width;
-    }
-    if (y + placeholderRect.height > parentRect.height) {
-      y = parentRect.height - placeholderRect.height;
-    }
+    // Position at placeholder location (relative to parent)
+    const x = placeholderRect.left - parentRect.left;
+    const y = placeholderRect.top - parentRect.top;
 
     this.activeJoystick.style.left = `${x}px`;
     this.activeJoystick.style.top = `${y}px`;
@@ -227,20 +253,9 @@ export class Joystick {
     const axisX = Math.cos(angleRad) * normalizedDistance;
     const axisY = Math.sin(angleRad) * normalizedDistance;
 
-    if (this.isTacticsMenuOpen) {
-      // Instead of sending a gamepad axis, the tactics menu uses the D Pad
-      const isDown = axisY > 0.9;
-      const isUp = axisY < -0.9;
-      if (isDown) {
-        input.setGamePadButton(mapLabelToGamepadButton('TacticsDown'), true);
-      } else if (isUp) {
-        input.setGamePadButton(mapLabelToGamepadButton('TacticsUp'), true);
-      }
-    } else {
-      // Send regular axis tilt to Netflix
-      input.setGamepadAxis(GamepadAxis.X, axisX);
-      input.setGamepadAxis(GamepadAxis.Y, axisY);
-    }
+    // Send axis tilt to Netflix
+    input.setGamepadAxis(GamepadAxis.X, axisX);
+    input.setGamepadAxis(GamepadAxis.Y, axisY);
 
   }
 
@@ -251,8 +266,23 @@ export class Joystick {
     this.placeholder.style.visibility = 'hidden';
 
     // Place the joystick wherever was touched within the bounds of #joystick-container
-    this._setJoystickCoordinates(e.clientX, e.clientY);
+    // this._setJoystickCoordinates(e.clientX, e.clientY);
+
     this.activeJoystick.classList.add('joystick--visible');
+
+    // Calculate initial input based on touch position
+    const { angle, distancePercentage } = this._calculateThumbstickAngleAndDistance(
+      e.clientX,
+      e.clientY
+    );
+
+    // Apply initial thumb position
+    const maxMovementPercentage = 40;
+    const scaledDistance = (distancePercentage / 100) * maxMovementPercentage;
+
+    this.thumbRestContainer.style.transform = `rotate(${angle}deg)`;
+    this.thumbRest.style.transform = `translateY(-${scaledDistance}%)`;
+    this._sendAxisInput(angle, distancePercentage);
   }
 
   _handlePointerUp(e) {
@@ -263,6 +293,10 @@ export class Joystick {
 
     this.placeholder.style.visibility = 'visible';
     this.activeJoystick.classList.remove('joystick--visible');
+
+    // Reset axis input
+    input.setGamepadAxis(GamepadAxis.X, 0);
+    input.setGamepadAxis(GamepadAxis.Y, 0);
   }
 
   _handlePointerMove(e) {
@@ -329,14 +363,11 @@ export class Joystick {
   this.isDraggingJoystick = false;
  }
 
- toggleTacticsMenu() {
-    this.isTacticsMenuOpen = !this.isTacticsMenuOpen;
-  }
 }
 
 // Defs are reusable effects on an svg like filters, drop shadows, patterns, etc.
 const joystickDefs = `
-  <filter id="filter0_d_235_19" x="0" y="0" width="316.677" height="311" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+  <filter id="filter0_d_235_19" x="0" y="0" width="295" height="289" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
       <feFlood flood-opacity="0" result="BackgroundImageFix"/>
       <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
       <feOffset/>
@@ -346,7 +377,7 @@ const joystickDefs = `
       <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_235_19"/>
       <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_235_19" result="shape"/>
   </filter>
-  <filter id="filter1_i_235_19" x="96.1035" y="95.9209" width="122.861" height="124.429" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+  <filter id="filter1_i_235_19" x="85.1035" y="84.9209" width="122.861" height="124.429" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
       <feFlood flood-opacity="0" result="BackgroundImageFix"/>
       <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
       <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>

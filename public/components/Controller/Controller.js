@@ -174,6 +174,7 @@ export class Controller {
     const buttonContainer = document.getElementById('button-container');
     if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
     if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
+    buttonContainer.style.width = '68%'; // A liiiitle bit smaller for the diamond
     buttonArea.style.justifyContent = 'flex-end';
 
     buttonContainer.appendChild(this.buttonA.getElement());
