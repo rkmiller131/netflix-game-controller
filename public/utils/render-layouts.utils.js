@@ -13,8 +13,9 @@ function renderOneButtonZoneLayout() {
     variant: 'singular',
   });
 
-  const buttonContainer = document.getElementById('button-area');
-  if (!buttonContainer) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
+  const buttonContainer = document.getElementById('button-container');
+  if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
+  console.log(buttonContainer)
 
   buttonContainer.appendChild(buttonA.getElement());
 }
@@ -37,13 +38,9 @@ function renderThreeButtonZoneLayout() {
     variant: 'left',
   });
 
-  const buttonArea = document.getElementById('button-area');
   const buttonContainer = document.getElementById('button-container');
-  if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
 
-  // The button area normally centers the button, but for multi-zones, align to the right.
-  buttonArea.style.justifyContent = 'flex-end';
   // For the tri-zone configuration, the button container needs to be a circle (buttons are like wedges of a pie shape)
   buttonContainer.style.borderRadius = '50%';
 

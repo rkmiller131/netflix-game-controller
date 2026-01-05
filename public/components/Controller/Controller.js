@@ -9,7 +9,7 @@ import { DiamondButton } from '../4_Button/DiamondButton.js';
 
 /**
  * The main Controller class, representing one NGC that can switch between
- * different layouts and pop up menus, mapping user inputs to game actions using the
+ * different layouts and pop-up menus, mapping user inputs to game actions using the
  * Netflix SDK controller bridge.
 */
 export class Controller {
@@ -26,6 +26,7 @@ export class Controller {
     this.buttonX = null;
     this.buttonY = null;
 
+    // Default to the 4 button diamond layout
     this._renderFourButtonDiamondLayout()
   }
 
@@ -73,8 +74,8 @@ export class Controller {
       variant: 'singular',
     });
 
-    const buttonContainer = document.getElementById('button-area');
-    if (!buttonContainer) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
+    const buttonContainer = document.getElementById('button-container');
+    if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
 
     buttonContainer.appendChild(this.buttonA.getElement());
   }
@@ -170,12 +171,9 @@ export class Controller {
       variant: 'top',
     });
 
-    const buttonArea = document.getElementById('button-area');
     const buttonContainer = document.getElementById('button-container');
-    if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
     if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
     buttonContainer.style.width = '68%'; // A liiiitle bit smaller for the diamond
-    buttonArea.style.justifyContent = 'flex-end';
 
     buttonContainer.appendChild(this.buttonA.getElement());
     buttonContainer.appendChild(this.buttonB.getElement());

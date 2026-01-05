@@ -38,5 +38,5 @@ layout.beginInit((error, config) => {
 // renderFourButtonDiamondLayout();
 // const joystick = new Joystick();
 // const tacticsButton = new TacticsButton();
-// const controller = new Controller();
+const controller = new Controller();
 // controller.switchLayout('oneButtonZone')
