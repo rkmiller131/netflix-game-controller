@@ -14,12 +14,13 @@ import { DiamondButton } from '../4_Button/DiamondButton.js';
 */
 export class Controller {
   constructor() {
-    this.joystick = new Joystick();
-
+    // Anything in the footer needs to be rendered first so joystick has proper size calculations
     this.tacticsButton = new TacticsButton({
       label: 'TACTICS',
       onClick: this._handleTacticsMenuClick.bind(this)
-    })
+    });
+
+    this.joystick = new Joystick();
 
     this.buttonA = null;
     this.buttonB = null;
@@ -173,7 +174,7 @@ export class Controller {
 
     const buttonContainer = document.getElementById('button-container');
     if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
-    buttonContainer.style.width = '68%'; // A liiiitle bit smaller for the diamond
+    // buttonContainer.style.height = '90%'; // A liiiitle bit smaller for the diamond
 
     buttonContainer.appendChild(this.buttonA.getElement());
     buttonContainer.appendChild(this.buttonB.getElement());

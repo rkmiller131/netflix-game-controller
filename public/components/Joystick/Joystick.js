@@ -1,6 +1,13 @@
 import { input, GamepadAxis } from '../../sdk/index.js';
 import { mapLabelToGamepadButton } from '../../utils/game-bridge.utils.js';
 
+/**
+ * The custom Joystick component is heavily dependent on its surrounding HTML/CSS structure.
+ * It requires a predefined container area (#joystick-area) and a placeholder SVG element
+ * (#joystick-placeholder) to determine its size and position.
+ * Anything rendered to the #footer (or anything above or below the .user-input-area)
+ * must be done before instantiating this class to ensure proper size calculations.
+*/
 export class Joystick {
   constructor() {
     this.joystickContainer = null;
@@ -140,36 +147,37 @@ export class Joystick {
   // ----------------------------------------------------------------------------
   // Repositions Joystick based on touch location -------------------------------
   // ----------------------------------------------------------------------------
-  // _setJoystickCoordinates(clientX, clientY) {
-  //   const parentRect = this.joystickContainer.getBoundingClientRect();
+  // (See _handlePointerDown for usage)
+  _setJoystickCoordinates(clientX, clientY) {
+    const parentRect = this.joystickContainer.getBoundingClientRect();
 
-  //   // Match the active joystick's size to the placeholder size
-  //   const placeholderSVG = this.placeholder.querySelector('svg');
-  //   const placeholderRect = placeholderSVG.getBoundingClientRect();
-  //   this.activeJoystick.style.width = `${placeholderRect.width}px`;
-  //   this.activeJoystick.style.height = `${placeholderRect.height}px`;
+    // Match the active joystick's size to the placeholder size
+    const placeholderSVG = this.placeholder.querySelector('svg');
+    const placeholderRect = placeholderSVG.getBoundingClientRect();
+    this.activeJoystick.style.width = `${placeholderRect.width}px`;
+    this.activeJoystick.style.height = `${placeholderRect.height}px`;
 
-  //   // Convert from pointer coordinates to parent coordinates
-  //   let x = clientX - parentRect.left;
-  //   let y = clientY - parentRect.top;
+    // Convert from pointer coordinates to parent coordinates
+    let x = clientX - parentRect.left;
+    let y = clientY - parentRect.top;
 
-  //   // Center the joystick at the touched coordinates
-  //   x = x - placeholderRect.width / 2;
-  //   y = y - placeholderRect.height / 2;
+    // Center the joystick at the touched coordinates
+    x = x - placeholderRect.width / 2;
+    y = y - placeholderRect.height / 2;
 
-  //   // Clamp within the parent container bounds (so it doesn't bleed past)
-  //   if (x < 0) x = 0;
-  //   if (y < 0) y = 0;
-  //   if (x + placeholderRect.width > parentRect.width) {
-  //     x = parentRect.width - placeholderRect.width;
-  //   }
-  //   if (y + placeholderRect.height > parentRect.height) {
-  //     y = parentRect.height - placeholderRect.height;
-  //   }
+    // Clamp within the parent container bounds (so it doesn't bleed past)
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    if (x + placeholderRect.width > parentRect.width) {
+      x = parentRect.width - placeholderRect.width;
+    }
+    if (y + placeholderRect.height > parentRect.height) {
+      y = parentRect.height - placeholderRect.height;
+    }
 
-  //   this.activeJoystick.style.left = `${x}px`;
-  //   this.activeJoystick.style.top = `${y}px`;
-  // }
+    this.activeJoystick.style.left = `${x}px`;
+    this.activeJoystick.style.top = `${y}px`;
+  }
 
   // -------------------------------------------------------------------------
   // Joystick that doesn't move ----------------------------------------------
@@ -265,6 +273,7 @@ export class Joystick {
     this.isDraggingJoystick = true;
     this.placeholder.style.visibility = 'hidden';
 
+    // COMMENT THIS BACK IN TO ENABLE MOVING JOYSTICK
     // Place the joystick wherever was touched within the bounds of #joystick-container
     // this._setJoystickCoordinates(e.clientX, e.clientY);
 

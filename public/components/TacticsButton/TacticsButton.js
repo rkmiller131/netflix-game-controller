@@ -36,7 +36,6 @@ export class TacticsButton {
     this.element = document.createElement('button');
     this.element.id = "tactics-button";
     this.element.textContent = this.config.label;
-    this.element.setAttribute('aria-pressed', 'false');
     this.buttonContainer.appendChild(this.element);
 
     return this.element;
@@ -60,7 +59,6 @@ export class TacticsButton {
     if (!this.element) return;
 
     this.element.classList.toggle('active', this.isActive);
-    this.element.setAttribute('aria-pressed', String(this.isActive));
   }
 
   /**

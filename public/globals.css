@@ -17,24 +17,37 @@ body {
 }
 
 #joystick-area {
-    flex-basis: 45%;
+    flex-basis: 50%;
     height: 100%;
-    z-index: 1;
-    border: 2px solid white;
+}
+
+#joystick-placeholder {
+  display: none;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: 10%;
+}
+
+#joystick-placeholder svg {
+  height: auto;
+  width: 63%;
 }
 
 #button-area {
-    position: relative;
     height: 100%;
     display: flex;
-    flex-basis: 55%;
+    flex-basis: 50%;
     align-items: center;
     justify-content: flex-end;
 }
 
 #button-container {
     position: relative;
-    width: 73%;
+    height: 100%; /* Use height and not width to respect safe area with aspect ratio */
+    max-height: calc(50svw - 20%);
     aspect-ratio: 1 / 1;
     display: flex;
     align-items: center;
@@ -49,6 +62,20 @@ body {
     justify-content: center;
 }
 
+.gradient-bloom {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% - 60%));
+    width: 100dvw;
+    height: 100dvw;
+    border-radius: 50%;
+    background: linear-gradient(to right, #360B27, #270836);
+    filter: blur(10dvw);
+    opacity: 0.8;
+    z-index: 1;
+}
+
 /* Safe areas defined by Netflix's CSS variables and get injected on layout.beginInit() */
 .safe-area {
     /* background: linear-gradient(#292638, #16121C); */
@@ -61,6 +88,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 .user-input-area {
@@ -69,18 +97,4 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.gradient-bloom {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, calc(-50% - 60%));
-    width: 100dvw;
-    height: 100dvw;
-    border-radius: 50%;
-    background: linear-gradient(to right, #360B27, #270836);
-    filter: blur(10dvw);
-    opacity: 0.8;
-    z-index: 0;
 }
