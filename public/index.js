@@ -39,4 +39,6 @@ layout.beginInit((error, config) => {
 // const joystick = new Joystick();
 // const tacticsButton = new TacticsButton();
 const controller = new Controller();
-// controller.switchLayout('oneButtonZone')
+// controller.switchLayout('oneButtonZone');
+// controller.switchLayout('threeButtonZone');
+// controller.switchLayout('fourButtonZone');

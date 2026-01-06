@@ -52,6 +52,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-right: 5%;
     /* border: 2px solid white; */
 }
 
@@ -97,4 +98,22 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+/* REUSABLE STYLES */
+.tv-button {
+    all: unset;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    background-color: #1c1c1c;
+    filter: drop-shadow(-3px 3px 0 black);
+    user-select: none;
+    touch-action: none;
+}
+
+.tv-button.active {
+    transform: scale(0.97);
+    filter: none;
+    box-shadow: 3px 3px 3px black inset;
+    background-color: #121212;
 }

@@ -35,6 +35,7 @@ export class TacticsButton {
     // The actual button element
     this.element = document.createElement('button');
     this.element.id = "tactics-button";
+    this.element.className = "tv-button";
     this.element.textContent = this.config.label;
     this.buttonContainer.appendChild(this.element);
 

@@ -78,14 +78,12 @@ export class QuadrantButtonZone extends OneButtonZone {
         this.svgStrokePath.setAttribute('stroke', '#D62536');
         this.svgStrokePath.setAttribute('stroke-width', '3');
         this.svgLabel.setAttribute('fill', '#D62536');
-        this.element.classList.add('zone-button--active');
     } else {
         // Default state
         this.svgPath.setAttribute('stroke', 'transparent');
         this.svgStrokePath.setAttribute('stroke', '#3B3A40');
         this.svgStrokePath.setAttribute('stroke-width', '3');
         this.svgLabel.setAttribute('fill', '#3B3A40');
-        this.element.classList.remove('zone-button--active');
     }
   }
 }
