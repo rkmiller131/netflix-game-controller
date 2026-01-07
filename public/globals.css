@@ -16,27 +16,23 @@ body {
     -webkit-touch-callout: none;
 }
 
-#joystick-area {
+#directional-input-area,
+#button-input-area,
+#button-container,
+#header,
+#footer,
+.user-input-area,
+.tv-button {
+    touch-action: none; /* Defensive css critical for diabling all default touch gestures on phones like Google Pixel */
+}
+
+#directional-input-area {
+    position: relative;
     flex-basis: 50%;
     height: 100%;
 }
 
-#joystick-placeholder {
-  display: none;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-left: 10%;
-}
-
-#joystick-placeholder svg {
-  height: auto;
-  width: 63%;
-}
-
-#button-area {
+#button-input-area {
     height: 100%;
     display: flex;
     flex-basis: 50%;
@@ -56,7 +52,16 @@ body {
     /* border: 2px solid white; */
 }
 
+#header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 #footer {
+    position: absolute;
+    bottom: 0;
     width: 100%;
     display: flex;
     align-items: center;
@@ -103,17 +108,19 @@ body {
 /* REUSABLE STYLES */
 .tv-button {
     all: unset;
+    font-family: "Google Sans Flex", sans-serif;
+    font-weight: 200;
+    letter-spacing: 1.25px;
     border: 1px solid black;
     border-radius: 0.5rem;
-    background-color: #1c1c1c;
-    filter: drop-shadow(-3px 3px 0 black);
+    background: linear-gradient(160deg, #383838 0%, #1c1c1c 50%, #131313 100%);
+    filter: drop-shadow(3px 3px 0 black);
     user-select: none;
-    touch-action: none;
 }
 
 .tv-button.active {
     transform: scale(0.97);
     filter: none;
     box-shadow: 3px 3px 3px black inset;
-    background-color: #121212;
+    background-color: #1c1c1c;
 }

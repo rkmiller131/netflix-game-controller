@@ -1,7 +1,8 @@
 import { input } from '../../sdk/index.js';
 import { mapLabelToGamepadButton } from '../../utils/game-bridge.utils.js';
 import { Joystick } from '../Joystick/Joystick.js';
-import { TacticsButton } from '../TacticsButton/TacticsButton.js';
+import { TVRemoteButton } from '../TVRemoteButton/TVRemoteButton.js';
+import { LayoutSwitchButton } from '../TVRemoteButton/LayoutSwitchButton.js';
 import { OneButtonZone } from '../1_Button/OneButtonZone.js';
 import { ThreeButtonZone } from '../3_Button/ThreeButtonZone.js';
 import { QuadrantButtonZone } from '../4_Button/QuadrantButtonZone.js';
@@ -10,25 +11,57 @@ import { DiamondButton } from '../4_Button/DiamondButton.js';
 /**
  * The main Controller class, representing one NGC that can switch between
  * different layouts and pop-up menus, mapping user inputs to game actions using the
- * Netflix SDK controller bridge.
+ * Netflix SDK controller bridge. From UE, pass in puzzle piece messages to change the layout components.
 */
 export class Controller {
-  constructor() {
-    // Anything in the footer needs to be rendered first so joystick has proper size calculations
-    this.tacticsButton = new TacticsButton({
+  constructor(config = {}) {
+    this.config = {
+      configurations: [
+        {
+          left: 'joystick',
+          right: 'fourButtonDiamond'
+        },
+        {
+          left: 'joystick',
+          right: 'oneButtonZone'
+        },
+        {
+          left: 'joystick',
+          right: 'threeButtonZone'
+        },
+        {
+          left: 'joystick',
+          right: 'fourButtonZone'
+        }
+      ],
+      ...config
+    }
+
+    this.layoutButton = new LayoutSwitchButton({
+      label: 'LAYOUT',
+      parentElementId: 'header',
+      maxIndex: this.config.configurations.length,
+      onClick: this._handleLayoutMenuClick.bind(this)
+    });
+
+    this.tacticsButton = new TVRemoteButton({
       label: 'TACTICS',
+      parentElementId: 'footer',
       onClick: this._handleTacticsMenuClick.bind(this)
     });
 
-    this.joystick = new Joystick();
+    this.joystick = null;
+    this.dPad = null;
 
     this.buttonA = null;
     this.buttonB = null;
     this.buttonX = null;
     this.buttonY = null;
 
-    // Default to the 4 button diamond layout
-    this._renderFourButtonDiamondLayout()
+    // We will have a set of layouts to switch between, defined in the controller config.
+    // In UE blueprints, set up left/right configurations and send in one "configurations" array,
+    // else it will cycle through the default configurations above.
+    this._renderFirstLayout()
   }
 
   /**
@@ -36,6 +69,17 @@ export class Controller {
    * Private methods
    * ----------------------------------------------------------------
   */
+  _renderFirstLayout() {
+    const firstLayout = this.config.configurations[0];
+    if (!firstLayout.left || !firstLayout.right) {
+      console.error('No layout configurations found for Controller - cannot render first layout!');
+      console.info('Must instantiate Controller with a "configurations" array containing left/right layout types.');
+      return;
+    }
+
+    this.switchLayout(firstLayout);
+  }
+
   _handleTacticsMenuClick() {
     // this.joystick.toggleTacticsMenu();
     input.setGamepadButton(mapLabelToGamepadButton('Tactics'), true);
@@ -67,8 +111,23 @@ export class Controller {
     }, 150); // Release Tactics after 150ms (menu needs time to open)
   }
 
+  _handleLayoutMenuClick() {
+    const currentLayout = this.config.configurations[this.layoutButton.currentLayoutIndex];
+    this.switchLayout(currentLayout);
+  }
+
+  _renderJoystickLayout() {
+    this._clearDirectionalInputReferences();
+    this.joystick = new Joystick();
+  }
+
+  _renderDPadLayout() {
+    this._clearDirectionalInputReferences();
+    console.log('Rendering D-Pad layout - NOT YET IMPLEMENTED');
+  }
+
   _renderOneButtonZoneLayout() {
-    this._clearButtonReferences();
+    this._clearButtonInputReferences();
 
     this.buttonA = new OneButtonZone({
       label: 'A',
@@ -82,7 +141,7 @@ export class Controller {
   }
 
   _renderThreeButtonZoneLayout() {
-    this._clearButtonReferences();
+    this._clearButtonInputReferences();
 
     this.buttonA = new ThreeButtonZone({
       label: 'A',
@@ -99,13 +158,9 @@ export class Controller {
       variant: 'left',
     });
 
-    const buttonArea = document.getElementById('button-area');
     const buttonContainer = document.getElementById('button-container');
-    if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
     if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
 
-    // The button area normally centers the button, but for multi-zones, align to the right.
-    buttonArea.style.justifyContent = 'flex-end';
     // For the tri-zone configuration, the button container needs to be a circle (buttons are like wedges of a pie shape)
     buttonContainer.style.borderRadius = '50%';
 
@@ -115,7 +170,7 @@ export class Controller {
   }
 
   _renderFourButtonZoneLayout() {
-    this._clearButtonReferences();
+    this._clearButtonInputReferences();
 
     this.buttonA = new QuadrantButtonZone({
       label: 'A',
@@ -137,11 +192,8 @@ export class Controller {
       variant: 'top',
     });
 
-    const buttonArea = document.getElementById('button-area');
     const buttonContainer = document.getElementById('button-container');
-    if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
     if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
-    buttonArea.style.justifyContent = 'flex-end';
 
     buttonContainer.appendChild(this.buttonA.getElement());
     buttonContainer.appendChild(this.buttonB.getElement());
@@ -150,7 +202,7 @@ export class Controller {
   }
 
   _renderFourButtonDiamondLayout() {
-    this._clearButtonReferences();
+    this._clearButtonInputReferences();
 
     this.buttonA = new DiamondButton({
       label: 'A',
@@ -182,7 +234,18 @@ export class Controller {
     buttonContainer.appendChild(this.buttonY.getElement());
   }
 
-  _clearButtonReferences() {
+  _clearDirectionalInputReferences() {
+    if (this.joystick) {
+      this.joystick.destroy();
+      this.joystick = null;
+    }
+    if (this.dPad) {
+      this.dPad.destroy();
+      this.dPad = null;
+    }
+  }
+
+  _clearButtonInputReferences() {
     if (this.buttonA) {
       this.buttonA.destroy();
       this.buttonA = null;
@@ -210,24 +273,44 @@ export class Controller {
     return this.element;
   }
 
-  switchLayout(layoutType) {
-    if (layoutType === 'oneButtonZone') {
-      this._renderOneButtonZoneLayout();
+  switchLayout({ left, right }) {
+    // RIGHT SIDE BUTTONS
+    switch(right) {
+      case 'oneButtonZone':
+        this._renderOneButtonZoneLayout();
+        break;
+      case 'threeButtonZone':
+        this._renderThreeButtonZoneLayout();
+        break;
+      case 'fourButtonZone':
+        this._renderFourButtonZoneLayout();
+        break;
+      case 'fourButtonDiamond':
+        this._renderFourButtonDiamondLayout();
+        break;
+      default:
+        console.error(`Controller.switchLayout: Unrecognized right layout type: ${right}`);
+        return;
     }
-    if (layoutType === 'threeButtonZone') {
-      this._renderThreeButtonZoneLayout();
-    }
-    if (layoutType === 'fourButtonZone') {
-      this._renderFourButtonZoneLayout();
-    }
-    if (layoutType === 'fourButtonDiamond') {
-      this._renderFourButtonDiamondLayout();
+
+    // LEFT SIDE DIRECTIONAL INPUT
+    switch(left) {
+      case 'joystick':
+        this._renderJoystickLayout();
+        break;
+      case 'dPad':
+        this._renderDPadLayout();
+        break;
+      default:
+        console.error(`Controller.switchLayout: Unrecognized left layout type: ${left}`);
+        return;
     }
   }
 
   destroy() {
-    this.joystick.destroy();
+    this.layoutButton.destroy();
     this.tacticsButton.destroy();
-    this._clearButtonReferences();
+    this._clearDirectionalInputReferences();
+    this._clearButtonInputReferences();
   }
 }

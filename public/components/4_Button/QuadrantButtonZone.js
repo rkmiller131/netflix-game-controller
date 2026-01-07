@@ -47,7 +47,7 @@ export class QuadrantButtonZone extends OneButtonZone {
     this.svgLabel.setAttribute('text-anchor', 'middle');
     this.svgLabel.setAttribute('dominant-baseline', 'middle');
     this.svgLabel.setAttribute('fill', '#3B3A40');
-    this.svgLabel.setAttribute('font-size', '3rem');
+    this.svgLabel.setAttribute('font-size', '6rem');
     this.svgLabel.setAttribute('font-weight', 'bold');
     this.svgLabel.setAttribute('pointer-events', 'none'); // ignore click events, container will handle.
     this.svgLabel.style.userSelect = 'none'; // prevent text cursor

@@ -59,7 +59,7 @@ export class ZoneButton {
     this.svgLabel.setAttribute('dominant-baseline', 'middle');
     this.svgLabel.setAttribute('fill', '#04050D');
     this.svgLabel.setAttribute('font-weight', 'bold');
-    this.svgLabel.setAttribute('font-size', '3rem');
+    this.svgLabel.setAttribute('font-size', '8rem');
     this.svgLabel.setAttribute('pointer-events', 'none'); // ignore click events, container will handle.
     this.svgLabel.style.userSelect = 'none'; // prevent text cursor
     this.svgLabel.textContent = this.config.label;
@@ -82,7 +82,7 @@ export class ZoneButton {
 
     // Mouse and touch events (visual changes, no functionality)
     this.svgPath.addEventListener('pointerdown', this._handlePointerDown.bind(this));
-    const buttonContainer = document.getElementById('button-area');
+    const buttonContainer = document.getElementById('button-input-area');
     if (buttonContainer) {
       buttonContainer.addEventListener('pointerup', this._handlePointerUpOutsideZone.bind(this));
     }

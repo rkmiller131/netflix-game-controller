@@ -25,21 +25,20 @@ export class Joystick {
     this._bindEvents();
   }
 
+  /**
+   * ----------------------------------------------------------------
+   * Private methods
+   * ----------------------------------------------------------------
+  */
   _setupReferences() {
-    const joystickContainer = document.getElementById('joystick-area');
+    const joystickContainer = document.getElementById('directional-input-area');
     if (!joystickContainer) {
-      console.warn('No joystick area found. Add <div id="joystick-area"></div> to your index.html');
-      return;
-    }
-
-    const joyStickPlaceholder = document.getElementById('joystick-placeholder');
-    if (!joyStickPlaceholder) {
-      console.warn('No joystick placeholder found. Add <div id="joystick-placeholder"><Your_SVG_Element /></div> to index.html');
+      console.warn('No joystick area found. Add <div id="directional-input-area"></div> to your index.html');
       return;
     }
 
     this.joystickContainer = joystickContainer;
-    this.placeholder = joyStickPlaceholder;
+    this.placeholder = this._buildPlaceholderJoystick();
     this.activeJoystick = this._buildActiveJoystick();
 
     const thumbRestContainer = this.activeJoystick.querySelector('#thumb-rest-container');
@@ -126,11 +125,71 @@ export class Joystick {
     return joystickElement;
   }
 
-  /**
-   * ----------------------------------------------------------------
-   * Private methods
-   * ----------------------------------------------------------------
-  */
+  _buildPlaceholderJoystick() {
+    if (!this.joystickContainer) {
+      console.error('Need a pre-defined container bounds for the joystick. _setupReferences() failed.');
+      return;
+    }
+
+    // Main placeholder container
+    const placeholderElement = document.createElement('div');
+    placeholderElement.id = 'joystick-placeholder';
+
+    // SVG container
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '295');
+    svg.setAttribute('height', '289');
+    svg.setAttribute('viewBox', '0 0 295 289');
+    svg.setAttribute('fill', 'none');
+
+    // Outer circle path
+    const outerPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    outerPath.setAttribute('d', 'M147.339 2C227.569 2.00026 292.677 65.7621 292.677 144.5C292.677 223.238 227.569 287 147.339 287C67.1086 287 2 223.238 2 144.5C2 65.7619 67.1086 2 147.339 2Z');
+    outerPath.setAttribute('stroke', 'url(#paint0_linear_260_17)');
+    outerPath.setAttribute('stroke-width', '4');
+
+    // Opacity group for the thumb rest
+    const opacityGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    opacityGroup.setAttribute('opacity', '0.3');
+
+    // Thumb rest path
+    const thumbPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    thumbPath.setAttribute('d', 'M146.531 74C186.551 74 219.063 105.811 219.063 145.135C219.063 184.459 186.551 216.27 146.531 216.27C106.511 216.269 74 184.459 74 145.135C74.0001 105.811 106.511 74.0002 146.531 74Z');
+    thumbPath.setAttribute('fill', '#ACA9BE');
+    thumbPath.setAttribute('stroke', '#151220');
+    thumbPath.setAttribute('stroke-width', '4');
+
+    // Inner filter group
+    const filterGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    filterGroup.setAttribute('filter', 'url(#filter0_i_235_19)');
+
+    // Inner ellipse
+    const innerEllipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+    innerEllipse.setAttribute('cx', '146.534');
+    innerEllipse.setAttribute('cy', '145.135');
+    innerEllipse.setAttribute('rx', '61.4307');
+    innerEllipse.setAttribute('ry', '60.2143');
+    innerEllipse.setAttribute('fill', '#BEBAD5');
+
+    // Defs for filters and gradients
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    defs.innerHTML = placeholderJoystickDefs;
+
+    // Assemble the SVG structure
+    filterGroup.appendChild(innerEllipse);
+    opacityGroup.appendChild(thumbPath);
+    opacityGroup.appendChild(filterGroup);
+
+    svg.appendChild(outerPath);
+    svg.appendChild(opacityGroup);
+    svg.appendChild(defs);
+
+    placeholderElement.appendChild(svg);
+    this.joystickContainer.appendChild(placeholderElement);
+
+    return placeholderElement;
+  }
+
   _bindEvents() {
     if (!this.joystickContainer) return;
 
@@ -269,15 +328,11 @@ export class Joystick {
 
   // Responsible for spawning/de-spawning the active joystick base
   _handlePointerDown(e) {
-    // console.log('e is ', e);
     this.isDraggingJoystick = true;
-    this.placeholder.style.visibility = 'hidden';
 
     // COMMENT THIS BACK IN TO ENABLE MOVING JOYSTICK
     // Place the joystick wherever was touched within the bounds of #joystick-container
     // this._setJoystickCoordinates(e.clientX, e.clientY);
-
-    this.activeJoystick.classList.add('joystick--visible');
 
     // Calculate initial input based on touch position
     const { angle, distancePercentage } = this._calculateThumbstickAngleAndDistance(
@@ -292,6 +347,9 @@ export class Joystick {
     this.thumbRestContainer.style.transform = `rotate(${angle}deg)`;
     this.thumbRest.style.transform = `translateY(-${scaledDistance}%)`;
     this._sendAxisInput(angle, distancePercentage);
+
+    this.placeholder.style.visibility = 'hidden';
+    this.activeJoystick.style.visibility = 'visible';
   }
 
   _handlePointerUp(e) {
@@ -301,7 +359,7 @@ export class Joystick {
     this.thumbRestContainer.style.transform = '';
 
     this.placeholder.style.visibility = 'visible';
-    this.activeJoystick.classList.remove('joystick--visible');
+    this.activeJoystick.style.visibility = 'hidden';
 
     // Reset axis input
     input.setGamepadAxis(GamepadAxis.X, 0);
@@ -353,7 +411,10 @@ export class Joystick {
     }
   }
 
-  // Remove active joystick DOM
+  // Remove the DOM elements
+  if (this.placeholder) {
+    this.placeholder.remove();
+  }
   if (this.activeJoystick) {
     this.activeJoystick.remove();
   }
@@ -397,6 +458,25 @@ const joystickDefs = `
       <feBlend mode="normal" in2="shape" result="effect1_innerShadow_235_19"/>
   </filter>
   <linearGradient id="pivotPathGradient" x1="179" y1="0" x2="179" y2="358" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#6A202B"/>
+    <stop offset="0.264423" stop-color="#561C3B"/>
+    <stop offset="0.692308" stop-color="#401644"/>
+    <stop offset="1" stop-color="#3A1551"/>
+  </linearGradient>
+`;
+
+const placeholderJoystickDefs = `
+  <filter id="filter0_i_235_19" x="85.1035" y="84.9209" width="122.861" height="124.429" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+    <feOffset dy="4"/>
+    <feGaussianBlur stdDeviation="2"/>
+    <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+    <feBlend mode="normal" in2="shape" result="effect1_innerShadow_235_19"/>
+  </filter>
+  <linearGradient id="paint0_linear_260_17" x1="179" y1="0" x2="179" y2="358" gradientUnits="userSpaceOnUse">
     <stop stop-color="#6A202B"/>
     <stop offset="0.264423" stop-color="#561C3B"/>
     <stop offset="0.692308" stop-color="#401644"/>

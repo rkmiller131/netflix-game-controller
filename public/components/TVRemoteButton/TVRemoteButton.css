@@ -1,0 +1,24 @@
+#tactics-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  touch-action: none;
+}
+
+#layout-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.33rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  margin-right: 3%;
+  touch-action: none;
+}
+
+.layout-label {
+  user-select: none;
+  white-space: nowrap;
+}
+
+.layout-icon {
+  flex-shrink: 0;
+}

@@ -1,6 +1,19 @@
-.zone-button {
+/* ----------------------------------------------------------------------------- */
+/* ----------------------------BASE STYLES-------------------------------------- */
+/* ----------------------------------------------------------------------------- */
+.zone-button,
+.wedge-button,
+.diamond-button {
   position: absolute;
   z-index: 2;
+  touch-action: none;
+}
+
+.zone-button > svg,
+.wedge-button > svg,
+.diamond-button > svg {
+  width: 100%;
+  height: 100%;
 }
 
 .zone-button--active,
@@ -12,11 +25,16 @@
   transform: scale(1.1);
 }
 
-.zone-button svg {
-  width: 100%;
-  height: 100%;
+.wedge-button--bottom svg path,
+.wedge-button--left svg path,
+.wedge-button--right svg path,
+.zone-button--bottom svg path,
+.zone-button--top svg path,
+.zone-button--left svg path,
+.zone-button--right svg path {
+  pointer-events: auto; /* Only the actual svg path should capture click events */
+  touch-action: none;
 }
-
 
 /* ----------------------------------------------------------------------------- */
 /* -----------------------------ONE BUTTON-------------------------------------- */
@@ -32,28 +50,18 @@
 /* ----------------------------------------------------------------------------- */
 
 .wedge-button {
-  position: absolute;
   width: 50%;
   height: 75%; /* Adjust to match the wedge's aspect ratio */
   /* All wedges start at the same position (container center) */
   top: 50%;
   left: 50%;
-  z-index: 2;
   pointer-events: none;
   /* Position the hinge point at container center - where the circle center is in the SVG viewBox, approximately at (1, 201) */
   transform-origin: 0.5% 66.67%;
 }
 
-.wedge-button svg {
-  width: 100%;
-  height: 100%;
+.wedge-button > svg {
   pointer-events: none;
-}
-
-.wedge-button--bottom svg path,
-.wedge-button--left svg path,
-.wedge-button--right svg path {
-  pointer-events: auto; /* Only the actual wedge path should capture click events */
 }
 
 .wedge-button--right {
@@ -73,13 +81,7 @@
 /* ----------------------------------------------------------------------------- */
 
 .diamond-button {
-  position: absolute;
   width: 35%;
-}
-
-.diamond-button svg {
-  width: 100%;
-  height: 100%;
 }
 
 .diamond-button--top {
@@ -120,13 +122,6 @@
 .zone-button--left > svg,
 .zone-button--right > svg {
   pointer-events: none; /* Ensure the SVG container does not capture click events (it's a large rectangle around the whole shape, causes Z fighting) */
-}
-
-.zone-button--bottom svg path,
-.zone-button--top svg path,
-.zone-button--left svg path,
-.zone-button--right svg path {
-  pointer-events: auto; /* Only the actual triangle path should capture click events */
 }
 
 /* Bottom (A) */

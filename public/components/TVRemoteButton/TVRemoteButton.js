@@ -1,12 +1,14 @@
 /**
- * A button specific to the Tactics UI, with a configurable onClick
- * that handles menu popup transitions within the controller.
+ * A button that looks like a beveled, light-illusioned TV Remote Button.
+ * Used in the Controller class to handle custom input transitions like
+ * menu popups or layout switches that send game messages to Unreal Engine.
 */
-export class TacticsButton {
+export class TVRemoteButton {
   constructor(config = {}) {
     // Default configuration if none passed to constructor
     this.config = {
         label: 'TACTICS',
+        parentElementId: 'footer',
         onClick: () => {},
         ...config
     };
@@ -27,14 +29,14 @@ export class TacticsButton {
   */
   _render() {
     // Where the button will be placed
-    this.buttonContainer = document.getElementById('footer');
+    this.buttonContainer = document.getElementById(this.config.parentElementId);
     if (!this.buttonContainer) {
-      console.warn('No footer area found. Add <div id="footer"></div> to your index.html');
+      console.warn(`No ${this.config.parentElementId} area found. Add <div id="${this.config.parentElementId}"></div> to your index.html`);
       return;
     }
     // The actual button element
     this.element = document.createElement('button');
-    this.element.id = "tactics-button";
+    this.element.id = `${this.config.label.toLowerCase()}-button`;
     this.element.className = "tv-button";
     this.element.textContent = this.config.label;
     this.buttonContainer.appendChild(this.element);

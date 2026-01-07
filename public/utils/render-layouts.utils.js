@@ -72,9 +72,9 @@ function renderFourButtonZoneLayout() {
     variant: 'top',
   });
 
-  const buttonArea = document.getElementById('button-area');
+  const buttonArea = document.getElementById('button-input-area');
   const buttonContainer = document.getElementById('button-container');
-  if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
+  if (!buttonArea) throw new Error('Wrapper div with id: "button-input-area" is required but could not be found!');
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
   buttonArea.style.justifyContent = 'flex-end';
 
@@ -107,9 +107,9 @@ function renderFourButtonDiamondLayout() {
     variant: 'top',
   });
 
-  const buttonArea = document.getElementById('button-area');
+  const buttonArea = document.getElementById('button-input-area');
   const buttonContainer = document.getElementById('button-container');
-  if (!buttonArea) throw new Error('Wrapper div with id: "button-area" is required but could not be found!');
+  if (!buttonArea) throw new Error('Wrapper div with id: "button-input-area" is required but could not be found!');
   if (!buttonContainer) throw new Error('Wrapper div with id: "button-container" is required but could not be found!');
   buttonArea.style.justifyContent = 'flex-end';
 

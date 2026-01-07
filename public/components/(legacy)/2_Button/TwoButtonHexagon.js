@@ -126,7 +126,7 @@ export class TwoButtonHexagon extends HexagonButton {
   */
   destroy() {
     this._clearTimer(this.holdTimerRef);
-    super.destory();
+    super.destroy();
   }
 
   // Changes from 'offense' to 'defense' should call this function
