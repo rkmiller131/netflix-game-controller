@@ -103,6 +103,8 @@ export class LayoutSwitchButton extends TVRemoteButton {
 
     this.element.addEventListener('pointerdown', this._handlePointerDown.bind(this));
     this.element.addEventListener('pointerup', this._handlePointerUp.bind(this));
+    // Sometimes quick switching between holds/clicks causes a "right click" context menu to appear
+    this.element.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
   _handlePointerDown(e) {

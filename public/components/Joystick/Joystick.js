@@ -16,6 +16,9 @@ export class Joystick {
     this.thumbRestContainer = null;
     this.thumbRest = null;
     this.isDraggingJoystick = false;
+    // Tracks which finger is controlling the joystick;
+    // ran into multi-touch issues with modern Chromium browsers
+    this.activePointerId = null;
 
     this._onPointerDown = null;
     this._onPointerUp = null;
@@ -200,7 +203,7 @@ export class Joystick {
     this.joystickContainer.addEventListener('pointerdown', this._onPointerDown);
     this.joystickContainer.addEventListener('pointerup', this._onPointerUp);
     this.joystickContainer.addEventListener('pointermove', this._onPointerMove);
-    // handle pointer cancel events as a pointer up (finish the dragging)?
+    this.joystickContainer.addEventListener('pointercancel', this._onPointerUp);
   }
 
   // ----------------------------------------------------------------------------
@@ -328,6 +331,18 @@ export class Joystick {
 
   // Responsible for spawning/de-spawning the active joystick base
   _handlePointerDown(e) {
+    e.preventDefault();
+
+    // Capture this specific pointer (finger) each time we press down.
+    // This tells the browser: "Send all future events from THIS finger to THIS element"
+    // Otherwise it's likely that other pointerdown/pointermove events from other elements like the buttons
+    // are bubbling up to the parent container; sometimes, even though event listeners are attached to specific
+    // elements, multiple pointer events can get sent to parent containers or at a more global level with multi-touch screens.
+    if (e.pointerId !== undefined) {
+      this.joystickContainer.setPointerCapture(e.pointerId);
+      this.activePointerId = e.pointerId;
+    }
+
     this.isDraggingJoystick = true;
 
     // COMMENT THIS BACK IN TO ENABLE MOVING JOYSTICK
@@ -341,8 +356,8 @@ export class Joystick {
     );
 
     // Apply initial thumb position
-    const maxMovementPercentage = 40;
-    const scaledDistance = (distancePercentage / 100) * maxMovementPercentage;
+    const MAX_MOVEMENT_PERCENTAGE = 40;
+    const scaledDistance = (distancePercentage / 100) * MAX_MOVEMENT_PERCENTAGE;
 
     this.thumbRestContainer.style.transform = `rotate(${angle}deg)`;
     this.thumbRest.style.transform = `translateY(-${scaledDistance}%)`;
@@ -353,6 +368,16 @@ export class Joystick {
   }
 
   _handlePointerUp(e) {
+    e.preventDefault();
+    // Only process pointer up for the active pointerId
+    if (this.activePointerId !== null && e.pointerId !== this.activePointerId) return;
+
+    // Release pointer capture when finger is lifted so we're ready for the next touch
+    if (e.pointerId !== undefined) {
+      this.joystickContainer.releasePointerCapture(e.pointerId);
+    }
+
+    this.activePointerId = null;
     this.isDraggingJoystick = false;
     // reset the thumb rest to center of the joystick pivot.
     this.thumbRest.style.transform = '';
@@ -367,6 +392,11 @@ export class Joystick {
   }
 
   _handlePointerMove(e) {
+    e.preventDefault();
+    // Filter out move events from other fingers (like the buttons)
+    // If this event is from a different pointerId, ignore it.
+    if (this.activePointerId !== null && e.pointerId !== this.activePointerId) return;
+
     if (!this.isDraggingJoystick) {
       this.thumbRest.style.transform = '';
       this.thumbRestContainer.style.transform = '';
@@ -379,8 +409,8 @@ export class Joystick {
 
       // Apply transforms (distance thumb rest moves from pivot)
       // based on a percentage of joystick size (e.g. max 40%)
-      const maxMovementPercentage = 40;
-      const scaledDistance = (distancePercentage / 100) * maxMovementPercentage;
+      const MAX_MOVEMENT_PERCENTAGE = 40;
+      const scaledDistance = (distancePercentage / 100) * MAX_MOVEMENT_PERCENTAGE;
 
       this.thumbRestContainer.style.transform = `rotate(${angle}deg)`;
       this.thumbRest.style.transform = `translateY(-${scaledDistance}%)`;
@@ -405,6 +435,7 @@ export class Joystick {
     }
     if (this._onPointerUp) {
       this.joystickContainer.removeEventListener('pointerup', this._onPointerUp);
+      this.joystickContainer.removeEventListener('pointercancel', this._onPointerUp);
     }
     if (this._onPointerMove) {
       this.joystickContainer.removeEventListener('pointermove', this._onPointerMove);
