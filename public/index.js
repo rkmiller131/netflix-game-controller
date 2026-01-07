@@ -1,11 +1,5 @@
 // Import the SDK (adjust relative path from public folder)
 import { layout, gameMessage } from './sdk/index.js';
-// import {
-//     renderOneButtonZoneLayout,
-//     renderThreeButtonZoneLayout,
-//     renderFourButtonZoneLayout,
-//     renderFourButtonDiamondLayout
-// } from './utils/render-layouts.utils.js';
 import { parseGameMessage } from './utils/game-bridge.utils.js';
 import { Controller } from './components/Controller/Controller.js';
 
@@ -23,7 +17,19 @@ layout.beginInit((error, config) => {
     // An event handler for receiving messages from the game -> this controller
     gameMessage.addReceiveHandler((data) => {
         const parsedData = parseGameMessage(data);
-        controller.switchLayout(parsedData.layoutType);
+        if (!parsedData) return;
+        /* Current shape of game messages (I miss TypeScript...):
+        {
+          "updateConfig": { "configurations": [ { "left": "joystick", "right": "oneButtonZone" ... }, ... ] },
+          "jumpToLayoutIndex": 2
+        }
+        */
+       if (parsedData.updateConfig) {
+        controller.updateConfig(parsedData.updateConfig);
+       }
+       if (parsedData.jumpToLayoutIndex) {
+        controller.jumpToLayout(parsedData.jumpToLayoutIndex);
+       }
     });
 
     layout.finishInit(() => {
@@ -32,13 +38,4 @@ layout.beginInit((error, config) => {
 });
 
 // FOR TESTING ON A WEB BROWSER WHERE THERE IS NO SDK ACCESS:
-// renderOneButtonZoneLayout();
-// renderThreeButtonZoneLayout();
-// renderFourButtonZoneLayout();
-// renderFourButtonDiamondLayout();
-// const joystick = new Joystick();
-// const tacticsButton = new TacticsButton();
-const controller = new Controller();
-// controller.switchLayout('oneButtonZone');
-// controller.switchLayout('threeButtonZone');
-// controller.switchLayout('fourButtonZone');
+// const controller = new Controller();

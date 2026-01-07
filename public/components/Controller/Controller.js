@@ -11,10 +11,15 @@ import { DiamondButton } from '../4_Button/DiamondButton.js';
 /**
  * The main Controller class, representing one NGC that can switch between
  * different layouts and pop-up menus, mapping user inputs to game actions using the
- * Netflix SDK controller bridge. From UE, pass in puzzle piece messages to change the layout components.
+ * Netflix SDK controller bridge. From UE, pass in puzzle piece messages in the config
+ * "configurations" array to change the layout components.
 */
 export class Controller {
   constructor(config = {}) {
+    // We will have a set of layouts to switch between, defined in the controller config.
+    // In UE blueprints, set up left/right configurations and send in one "configurations" array,
+    // else it will cycle through the default configurations below. Can also call updateConfig()
+    // to change the configurations at runtime.
     this.config = {
       configurations: [
         {
@@ -37,6 +42,26 @@ export class Controller {
       ...config
     }
 
+    this.layoutButton = null;
+    this.tacticsButton = null;
+
+    this.joystick = null;
+    this.dPad = null;
+
+    this.buttonA = null;
+    this.buttonB = null;
+    this.buttonX = null;
+    this.buttonY = null;
+
+    this._initialize();
+  }
+
+  /**
+   * ----------------------------------------------------------------
+   * Private methods
+   * ----------------------------------------------------------------
+  */
+  _initialize() {
     this.layoutButton = new LayoutSwitchButton({
       label: 'LAYOUT',
       parentElementId: 'header',
@@ -50,25 +75,9 @@ export class Controller {
       onClick: this._handleTacticsMenuClick.bind(this)
     });
 
-    this.joystick = null;
-    this.dPad = null;
-
-    this.buttonA = null;
-    this.buttonB = null;
-    this.buttonX = null;
-    this.buttonY = null;
-
-    // We will have a set of layouts to switch between, defined in the controller config.
-    // In UE blueprints, set up left/right configurations and send in one "configurations" array,
-    // else it will cycle through the default configurations above.
-    this._renderFirstLayout()
+    this._renderFirstLayout();
   }
 
-  /**
-   * ----------------------------------------------------------------
-   * Private methods
-   * ----------------------------------------------------------------
-  */
   _renderFirstLayout() {
     const firstLayout = this.config.configurations[0];
     if (!firstLayout.left || !firstLayout.right) {
@@ -307,9 +316,40 @@ export class Controller {
     }
   }
 
+  jumpToLayout(index) {
+    const layoutConfig = this.config.configurations[index];
+    if (!layoutConfig) {
+      console.error(`Controller.jumpToLayout(): No layout configuration found at index ${index} - cannot switch!`);
+      return;
+    }
+
+    this.switchLayout(layoutConfig);
+    this.layoutButton.updateLayoutIndex(index);
+  }
+
+  updateConfig(newConfig) {
+    if (
+      newConfig.configurations &&
+      Array.isArray(newConfig.configurations) &&
+      newConfig.configurations.length > 0
+    ) {
+      this.config = newConfig;
+      this.destroy();
+      this._initialize();
+    } else {
+      console.error('Controller.updateConfig(): Invalid configurations array - cannot update!');
+    }
+  }
+
   destroy() {
-    this.layoutButton.destroy();
-    this.tacticsButton.destroy();
+    if (this.layoutButton) {
+      this.layoutButton.destroy();
+      this.layoutButton = null;
+    }
+    if (this.tacticsButton) {
+      this.tacticsButton.destroy();
+      this.tacticsButton = null;
+    }
     this._clearDirectionalInputReferences();
     this._clearButtonInputReferences();
   }

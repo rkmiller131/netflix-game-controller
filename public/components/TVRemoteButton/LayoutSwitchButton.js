@@ -170,6 +170,19 @@ export class LayoutSwitchButton extends TVRemoteButton {
    * Public methods
    * ----------------------------------------------------------------
   */
+
+  updateLayoutIndex(newIndex) {
+    if (
+      typeof newIndex === 'number' &&
+      newIndex >= 0 &&
+      newIndex < this.config.maxIndex
+    ) {
+      this.currentLayoutIndex = newIndex;
+    } else {
+      console.error(`LayoutSwitchButton.updateLayoutIndex(): Invalid index ${newIndex}`);
+    }
+  }
+
   destroy() {
     this._clearTimer(this.holdTimerRef);
     super.destroy();
